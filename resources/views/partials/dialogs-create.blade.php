@@ -48,9 +48,9 @@
             <input
                 id="create-original-url"
                 name="original_url"
-                type="url"
+                type="text"
                 value="{{ old('original_url') }}"
-                placeholder="https://example.com/very-long-url"
+                placeholder="example.com/very-long-url"
                 required
                 autocomplete="off"
                 class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition @error('original_url', 'createUrl') border-red-400 dark:border-red-500 @enderror"

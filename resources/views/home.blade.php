@@ -140,7 +140,7 @@
                                     @endif
                                     <div class="flex items-center gap-1.5 mt-0.5">
                                         <a
-                                            href="{{ $url->shortLink() }}"
+                                            href="{{ $url->shortLink(1) }}"
                                             target="_blank"
                                             class="font-mono text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
                                         >/{{ $url->short_code }}</a>

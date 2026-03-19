@@ -14,8 +14,21 @@ class ShortUrl extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function shortLink(): string
+    public function shortLink(bool $withProtocol = false): string
     {
-        return url('/' . $this->short_code);
+        if ($withProtocol) {
+            return url('/' . $this->short_code);
+        } else {
+            return ltrim(url('/' . $this->short_code), 'http://');
+        }
+    }
+
+    public static function setProtocolIfNotSet(string $original_url): string
+    {
+        if (!(preg_match('~^http?://~i', $original_url) || preg_match('~^https?://~i', $original_url))) {
+            $original_url = 'http://' . $original_url;
+        }
+
+        return $original_url;
     }
 }
