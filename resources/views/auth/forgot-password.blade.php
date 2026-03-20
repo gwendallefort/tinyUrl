@@ -1,5 +1,5 @@
 <x-layouts.auth>
-    <x-slot name="title">Reset password &mdash; {{ config('app.name') }}</x-slot>
+    <x-slot name="title">{{ config('app.name') }} - Reset password</x-slot>
 
     <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Forgot your password?</h1>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+    <form id="forgot-password-form" method="POST" action="{{ route('password.email') }}" class="space-y-5">
         @csrf
 
         {{-- Email --}}
@@ -40,17 +40,46 @@
 
         {{-- Submit --}}
         <button
+            id="forgot-password-submit"
             type="submit"
-            class="w-full px-4 py-2.5 text-sm font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-white transition-colors cursor-pointer"
+            class="w-full px-4 py-2.5 text-sm font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-white transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
-            Send reset link
+            <span id="forgot-password-submit-text">Send reset link</span>
+            <span id="forgot-password-submit-loading" class="hidden items-center gap-2">
+                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
+                </svg>
+                Sending...
+            </span>
         </button>
     </form>
 
     <p class="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
         Remembered it?
         <a href="{{ route('login') }}" class="font-medium text-zinc-900 dark:text-zinc-100 hover:underline underline-offset-4 transition-colors">
-            Back to sign in
+            Back to log in
         </a>
     </p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('forgot-password-form');
+            const submitButton = document.getElementById('forgot-password-submit');
+            const submitText = document.getElementById('forgot-password-submit-text');
+            const loadingIndicator = document.getElementById('forgot-password-submit-loading');
+
+            if (!form || !submitButton || !submitText || !loadingIndicator) {
+                return;
+            }
+
+            form.addEventListener('submit', function () {
+                submitButton.disabled = true;
+                submitButton.setAttribute('aria-busy', 'true');
+                submitText.classList.add('hidden');
+                loadingIndicator.classList.remove('hidden');
+                loadingIndicator.classList.add('inline-flex');
+            });
+        });
+    </script>
 </x-layouts.auth>

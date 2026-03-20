@@ -1,5 +1,5 @@
 <x-layouts.auth>
-    <x-slot name="title">Set new password &mdash; {{ config('app.name') }}</x-slot>
+    <x-slot name="title">{{ config('app.name') }} - Set new password</x-slot>
 
     <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Set new password</h1>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Choose a strong password for your account.</p>
@@ -36,18 +36,15 @@
             <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
                 New password
             </label>
-            <input
+            <x-password-input
                 id="password"
-                type="password"
                 name="password"
-                required
-                autofocus
                 autocomplete="new-password"
                 placeholder="At least 8 characters"
-                class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg outline-none transition-colors
-                    {{ $errors->has('password') ? 'border-red-400 dark:border-red-600' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
-                    text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
-            >
+                autofocus
+                :hasError="$errors->has('password')"
+                inputClass="px-3.5 py-2.5"
+            />
             @error('password')
                 <p class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
             @enderror
@@ -58,17 +55,13 @@
             <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
                 Confirm new password
             </label>
-            <input
+            <x-password-input
                 id="password_confirmation"
-                type="password"
                 name="password_confirmation"
-                required
                 autocomplete="new-password"
-                placeholder="••••••••"
-                class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg outline-none transition-colors
-                    {{ $errors->has('password_confirmation') ? 'border-red-400 dark:border-red-600' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
-                    text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
-            >
+                :hasError="$errors->has('password_confirmation')"
+                inputClass="px-3.5 py-2.5"
+            />
             @error('password_confirmation')
                 <p class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
             @enderror

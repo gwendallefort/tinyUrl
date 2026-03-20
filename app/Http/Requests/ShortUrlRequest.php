@@ -12,9 +12,22 @@ abstract class ShortUrlRequest extends FormRequest
     {
         return [
             'title'        => 'nullable|string|max:255',
-            'original_url' => ['required', 'max:2048', 'regex:/^.+\..{2,}$/'],
+            'original_url' => [
+                'required', 'max:2048', 'regex:/^.+\..{2,}$/',
+                function ($attribute, $value, $fail) {
+                    $shortCode = $this->input('short_code') ?: $this->route('shortUrl')?->short_code;
+                    if (!$shortCode) {
+                        return;
+                    }
+                    $normalized = ShortUrl::setProtocolIfNotSet($value);
+                    if (rtrim($normalized, '/') === rtrim(url('/' . $shortCode), '/')) {
+                        $fail(trans('validation_short_url.original_url.loop'));
+                    }
+                },
+            ],
             'short_code'   => [
                 'nullable', 'string', 'min:2', 'max:20', 'alpha_dash',
+                // avoid duplicate
                 function ($attribute, $value, $fail) use ($excludeId) {
                     $query = ShortUrl::whereRaw('BINARY short_code = ?', [$value]);
 
@@ -26,6 +39,7 @@ abstract class ShortUrlRequest extends FormRequest
                         $fail(trans('validation_short_url.short_code.taken'));
                     }
                 },
+                // keep some reserved urls
                 function ($attribute, $value, $fail) {
                     $routeSegments = collect(Route::getRoutes())
                         ->map(fn ($route) => explode('/', ltrim($route->uri(), '/'))[0])

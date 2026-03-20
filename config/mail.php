@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Global "To" Address For Non-Production
+    |--------------------------------------------------------------------------
+    |
+    | When configured and the application is not running in production, all
+    | outgoing emails can be redirected to a single test mailbox.
+    |
+    */
+
+    'to_testing' => env('MAIL_TO_TESTING'),
+
 ];

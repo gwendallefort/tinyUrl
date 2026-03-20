@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Profile &mdash; {{ config('app.name') }}</title>
+    <title>{{ config('app.name') }} - Profile</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    @include('partials.favicon')
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -27,7 +28,7 @@
         {{-- Profile information --}}
         <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
             <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Profile information</h2>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Update your name and email address.</p>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Update your email address.</p>
 
             @if (session('status') === 'profile-updated')
                 <div class="mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
@@ -38,23 +39,6 @@
             <form method="POST" action="{{ route('profile.update-information') }}" class="space-y-4">
                 @csrf
                 @method('PUT')
-
-                {{-- Name --}}
-                <div>
-                    <label for="name" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Name</label>
-                    <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        value="{{ old('name', auth()->user()->name) }}"
-                        required
-                        autocomplete="name"
-                        class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition @error('name', 'updateProfileInformation') border-red-400 dark:border-red-500 @enderror"
-                    >
-                    @error('name', 'updateProfileInformation')
-                        <p class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
 
                 {{-- Email --}}
                 <div>
@@ -99,14 +83,15 @@
                 {{-- Current password --}}
                 <div>
                     <label for="current_password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Current password</label>
-                    <input
+                    <x-password-input
                         id="current_password"
                         name="current_password"
-                        type="password"
-                        required
                         autocomplete="current-password"
-                        class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition @error('current_password', 'updatePassword') border-red-400 dark:border-red-500 @enderror"
-                    >
+                        :hasError="$errors->updatePassword->has('current_password')"
+                        inputClass="px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition"
+                        normalBorderClass="border-zinc-300 dark:border-zinc-600"
+                        errorBorderClass="border-red-400 dark:border-red-500"
+                    />
                     @error('current_password', 'updatePassword')
                         <p class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
@@ -115,14 +100,15 @@
                 {{-- New password --}}
                 <div>
                     <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">New password</label>
-                    <input
+                    <x-password-input
                         id="password"
                         name="password"
-                        type="password"
-                        required
                         autocomplete="new-password"
-                        class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition @error('password', 'updatePassword') border-red-400 dark:border-red-500 @enderror"
-                    >
+                        :hasError="$errors->updatePassword->has('password')"
+                        inputClass="px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition"
+                        normalBorderClass="border-zinc-300 dark:border-zinc-600"
+                        errorBorderClass="border-red-400 dark:border-red-500"
+                    />
                     @error('password', 'updatePassword')
                         <p class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
@@ -131,14 +117,13 @@
                 {{-- Confirm new password --}}
                 <div>
                     <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Confirm new password</label>
-                    <input
+                    <x-password-input
                         id="password_confirmation"
                         name="password_confirmation"
-                        type="password"
-                        required
                         autocomplete="new-password"
-                        class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition"
-                    >
+                        inputClass="px-3 py-2 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition"
+                        normalBorderClass="border-zinc-300 dark:border-zinc-600"
+                    />
                 </div>
 
                 <div class="pt-1">
@@ -184,14 +169,13 @@
 
                     <div>
                         <label for="delete_password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Password</label>
-                        <input
+                        <x-password-input
                             id="delete_password"
                             name="password"
-                            type="password"
-                            required
                             autocomplete="current-password"
-                            class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
-                        >
+                            inputClass="px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                            normalBorderClass="border-zinc-300 dark:border-zinc-600"
+                        />
                     </div>
 
                     <div class="flex items-center gap-3 pt-1">
@@ -215,5 +199,6 @@
 
     </main>
 
+    @stack('scripts')
 </body>
 </html>

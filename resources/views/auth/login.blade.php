@@ -1,8 +1,8 @@
 <x-layouts.auth>
-    <x-slot name="title">Sign in &mdash; {{ config('app.name') }}</x-slot>
+    <x-slot name="title">{{ config('app.name') }} - Log in</x-slot>
 
     <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Welcome back</h1>
-    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Sign in to your account to continue</p>
+    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Log in to your account to continue</p>
 
     {{-- Session status (e.g. after password reset) --}}
     @if (session('status'))
@@ -49,17 +49,13 @@
                     </a>
                 @endif
             </div>
-            <input
+            <x-password-input
                 id="password"
-                type="password"
                 name="password"
-                required
                 autocomplete="current-password"
-                placeholder="••••••••"
-                class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg outline-none transition-colors
-                    {{ $errors->has('password') ? 'border-red-400 dark:border-red-600 focus:border-red-400 dark:focus:border-red-500' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
-                    text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
-            >
+                :hasError="$errors->has('password')"
+                inputClass="px-3.5 py-2.5"
+            />
             @error('password')
                 <p class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
             @enderror
@@ -83,7 +79,7 @@
             type="submit"
             class="w-full px-4 py-2.5 text-sm font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-white transition-colors cursor-pointer"
         >
-            Sign in
+            Log in
         </button>
     </form>
 

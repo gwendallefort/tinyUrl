@@ -9,4 +9,5 @@ return [
     'short_code.max'        => 'The alias is too long (20 characters max).',
     'short_code.alpha_dash' => 'The alias may only contain letters, numbers, dashes, and underscores.',
     'short_code.taken'      => 'This alias is already taken. Please choose another.',
+    'original_url.loop'     => 'The destination URL cannot point to its own short link.',
 ];

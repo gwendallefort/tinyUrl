@@ -14,16 +14,16 @@
             @endunless
 
             @if(request()->routeIs('profile'))
-                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ auth()->user()->name }}</span>
+                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Profile</span>
             @else
                 <a href="{{ route('profile') }}" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                    {{ auth()->user()->name }}
+                    Profile
                 </a>
             @endif
 
-            <form method="POST" action="{{ route('logout') }}">
+            <form method="POST" action="{{ route('logout') }}" class="flex items-center">
                 @csrf
-                <button type="submit" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer">
+                <button type="submit" class="inline-flex items-center text-sm leading-5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer">
                     Sign out
                 </button>
             </form>

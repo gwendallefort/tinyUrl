@@ -12,7 +12,7 @@ class ShortUrlController extends Controller
     public function redirect(string $code)
     {
         $shortUrl = ShortUrl::whereRaw('BINARY short_code = ?', [$code])->firstOrFail();
-        $shortUrl->increment('clicks');
+        $this->acknowledgeClicksAsync($shortUrl);
 
         return redirect($shortUrl->original_url);
     }
@@ -33,7 +33,10 @@ class ShortUrlController extends Controller
 
     public function update(UpdateShortUrlRequest $request, ShortUrl $shortUrl)
     {
-        $shortUrl->update($request->validated());
+        $data = $request->validated();
+        $data['original_url'] = ShortUrl::setProtocolIfNotSet($data['original_url']);
+
+        $shortUrl->update($data);
 
         return redirect()->route('home')->with('status', 'url-updated');
     }
@@ -45,5 +48,10 @@ class ShortUrlController extends Controller
         $shortUrl->delete();
 
         return redirect()->route('home')->with('status', 'url-deleted');
+    }
+
+    private function acknowledgeClicksAsync(ShortUrl $shortUrl): void
+    {
+        dispatch(fn () => $shortUrl->increment('clicks'))->afterResponse();
     }
 }

@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard &mdash; {{ config('app.name') }}</title>
+    <title>{{ config('app.name') }} - Dashboard</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    @include('partials.favicon')
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/css/home.css', 'resources/js/app.js', 'resources/js/home.js'])
@@ -156,7 +157,7 @@
                                     <div class="flex items-center justify-end gap-2">
                                         <button
                                             type="button"
-                                            onclick="openEditDialog({{ $url->id }}, {{ json_encode($url->title ?? '') }}, {{ json_encode($url->original_url) }}, {{ json_encode($url->short_code) }})"
+                                            onclick="openEditDialog('{{ $url->uuid }}', {{ json_encode($url->title ?? '') }}, {{ json_encode($url->original_url) }}, {{ json_encode($url->short_code) }})"
                                             class="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                                             title="Edit"
                                         >
@@ -166,7 +167,7 @@
                                         </button>
                                         <button
                                             type="button"
-                                            onclick="openDeleteDialog({{ $url->id }}, {{ json_encode($url->title ?: $url->short_code) }})"
+                                            onclick="openDeleteDialog('{{ $url->uuid }}', {{ json_encode($url->title ?: $url->short_code) }})"
                                             class="p-1.5 rounded-md text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
                                             title="Delete"
                                         >
@@ -198,10 +199,10 @@
         @endif
 
         // Re-open edit dialog if there are validation errors
-        @if ($errors->editUrl->any() && old('_edit_url_id'))
+        @if ($errors->editUrl->any() && old('_edit_url_uuid'))
             document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('edit-form').action = '/b/short-urls/{{ old('_edit_url_id') }}';
-                document.getElementById('edit-url-id-field').value = {!! json_encode(old('_edit_url_id', '')) !!};
+                document.getElementById('edit-form').action = '/b/short-urls/{{ old('_edit_url_uuid') }}';
+                document.getElementById('edit-url-id-field').value = {!! json_encode(old('_edit_url_uuid', '')) !!};
                 document.getElementById('edit-title').value = {!! json_encode(old('title', '')) !!};
                 document.getElementById('edit-original-url').value = {!! json_encode(old('original_url', '')) !!};
                 document.getElementById('edit-short-code').value = {!! json_encode(old('short_code', '')) !!};

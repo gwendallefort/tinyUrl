@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'TinyUrl') }} &mdash; Shorten your links</title>
+    <title>{{ config('app.name') }} - Short links</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    @include('partials.favicon')
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -58,7 +59,6 @@
             </h1>
             <p class="mt-5 text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
                 Turn any long URL into a clean, shareable link in seconds.
-                Track your clicks and manage all your links in one place.
             </p>
             <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
                 @if (Route::has('register'))

@@ -14,10 +14,23 @@ function openDeleteDialog(id, label) {
 }
 
 function copyToClipboard(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
+    const markCopied = () => {
         btn.dataset.copied = '';
         setTimeout(() => delete btn.dataset.copied, 2000);
-    });
+    };
+
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(markCopied);
+    } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        markCopied();
+    }
 }
 
 window.openEditDialog = openEditDialog;

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShortUrlController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +8,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Override Fortify's forgot-password route to prevent email enumeration
+Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.email');
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', function () {
@@ -30,7 +36,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Public short URL redirect — must be last to avoid shadowing other routes
+// Public short URL redirect - must be last to avoid shadowing other routes
 Route::get('/{code}', [ShortUrlController::class, 'redirect'])
     ->name('short-url.redirect')
     ->where('code', '[A-Za-z0-9_-]+');
