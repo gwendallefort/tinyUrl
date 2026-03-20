@@ -17,13 +17,18 @@ class StagingAccess
         $expectedUser = (string) config('staging.user');
         $expectedPass = (string) config('staging.password');
 
+        // Fail closed in staging if credentials are not configured.
+        if ($expectedUser === '' || $expectedPass === '') {
+            return response('Staging credentials are not configured.', 503);
+        }
+
         $givenUser = (string) $request->getUser();
         $givenPass = (string) $request->getPassword();
 
         $ok = hash_equals($expectedUser, $givenUser)
             && hash_equals($expectedPass, $givenPass);
 
-        if (! $ok) {
+        if (! $ok || $request->has('logout-staging')) {
             return response('Authentication required', 401, [
                 'WWW-Authenticate' => 'Basic realm="Staging"',
             ]);

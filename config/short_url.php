@@ -147,6 +147,7 @@ return [
         'to',
         'id',
         'ok',
+        'up',
 
         // Others
         'aB3x9k' // url from the example in the welcome page
