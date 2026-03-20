@@ -70,12 +70,6 @@
                         </svg>
                     </a>
                 @endif
-                @if (Route::has('login'))
-                    <a href="{{ route('login') }}"
-                       class="inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
-                        Sign in
-                    </a>
-                @endif
             </div>
         </div>
     </section>

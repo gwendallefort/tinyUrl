@@ -27,6 +27,7 @@
     <form id="edit-form" method="POST" action="" class="space-y-4">
         @csrf
         @method('PUT')
+        <input type="hidden" name="_edit_url_id" id="edit-url-id-field" value="{{ old('_edit_url_id', '') }}">
 
         {{-- Title --}}
         <div>

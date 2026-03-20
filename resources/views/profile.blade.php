@@ -14,27 +14,7 @@
 </head>
 <body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
-    {{-- Nav --}}
-    <header class="border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-                {{ config('app.name') }}
-            </a>
-            <div class="flex items-center gap-4">
-                <a href="{{ route('home') }}" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                    Dashboard
-                </a>
-                <span class="text-zinc-300 dark:text-zinc-600">|</span>
-                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ auth()->user()->name }}</span>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer">
-                        Sign out
-                    </button>
-                </form>
-            </div>
-        </div>
-    </header>
+    @include('partials/nav')
 
     {{-- Content --}}
     <main class="max-w-2xl mx-auto px-4 sm:px-6 py-12 space-y-6">

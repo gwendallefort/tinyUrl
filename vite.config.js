@@ -19,6 +19,8 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
+        host: '0.0.0.0',
+        origin: 'http://lig.test:5173',
         cors: true,
         watch: {
             ignored: ['**/storage/framework/views/**'],

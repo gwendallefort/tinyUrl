@@ -15,25 +15,7 @@
 <body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
     {{-- Nav --}}
-    <header class="border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-                @include('components/logo')
-                {{ config('app.name') }}
-            </a>
-            <div class="flex items-center gap-4">
-                <a href="{{ route('profile') }}" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-                    {{ auth()->user()->name }}
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer">
-                        Sign out
-                    </button>
-                </form>
-            </div>
-        </div>
-    </header>
+    @include('partials/nav')
 
     {{-- Content --}}
     <main class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
@@ -216,12 +198,13 @@
         @endif
 
         // Re-open edit dialog if there are validation errors
-        @if ($errors->editUrl->any() && session('edit_id'))
+        @if ($errors->editUrl->any() && old('_edit_url_id'))
             document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('edit-form').action = '/short-urls/{{ session('edit_id') }}';
-                document.getElementById('edit-title').value = {{ json_encode(old('title', '')) }};
-                document.getElementById('edit-original-url').value = {{ json_encode(old('original_url', '')) }};
-                document.getElementById('edit-short-code').value = {{ json_encode(old('short_code', '')) }};
+                document.getElementById('edit-form').action = '/b/short-urls/{{ old('_edit_url_id') }}';
+                document.getElementById('edit-url-id-field').value = {!! json_encode(old('_edit_url_id', '')) !!};
+                document.getElementById('edit-title').value = {!! json_encode(old('title', '')) !!};
+                document.getElementById('edit-original-url').value = {!! json_encode(old('original_url', '')) !!};
+                document.getElementById('edit-short-code').value = {!! json_encode(old('short_code', '')) !!};
                 document.getElementById('edit-modal').showModal();
             });
         @endif

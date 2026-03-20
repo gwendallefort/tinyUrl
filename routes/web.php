@@ -23,9 +23,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::post('/short-urls', [ShortUrlController::class, 'store'])->name('short-urls.store');
-    Route::put('/short-urls/{shortUrl}', [ShortUrlController::class, 'update'])->name('short-urls.update');
-    Route::delete('/short-urls/{shortUrl}', [ShortUrlController::class, 'destroy'])->name('short-urls.destroy');
+    Route::prefix('b')->group(function () {
+        Route::post('/short-urls', [ShortUrlController::class, 'store'])->name('short-urls.store');
+        Route::put('/short-urls/{shortUrl}', [ShortUrlController::class, 'update'])->name('short-urls.update');
+        Route::delete('/short-urls/{shortUrl}', [ShortUrlController::class, 'destroy'])->name('short-urls.destroy');
+    });
 });
 
 // Public short URL redirect — must be last to avoid shadowing other routes
