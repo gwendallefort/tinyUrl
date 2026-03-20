@@ -6,12 +6,15 @@
         </a>
         <div class="flex items-center gap-4">
 
-            @unless(request()->routeIs('home'))
+            @if(request()->routeIs('home'))
+                <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Dashboard</span>
+            @else
                 <a href="{{ route('home') }}" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                     Dashboard
                 </a>
-                <span class="text-zinc-300 dark:text-zinc-600">|</span>
-            @endunless
+            @endif
+
+            <span class="text-zinc-300 dark:text-zinc-600">|</span>
 
             @if(request()->routeIs('profile'))
                 <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Profile</span>
@@ -21,10 +24,12 @@
                 </a>
             @endif
 
+            <span class="text-zinc-300 dark:text-zinc-600">|</span>
+
             <form method="POST" action="{{ route('logout') }}" class="flex items-center">
                 @csrf
                 <button type="submit" class="inline-flex items-center text-sm leading-5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer">
-                    Sign out
+                    Log out
                 </button>
             </form>
         </div>

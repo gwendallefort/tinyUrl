@@ -30,7 +30,7 @@
 
             <h1 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Page not found</h1>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-                The link you followed may be broken, expired, or it may never have existed.hort links are cas
+                The link you followed may be broken, expired, or it may never have existed.
             </p>
 
             <div class="flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-left mb-8">
@@ -38,7 +38,7 @@
                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                 </svg>
                 <p class="text-xs text-amber-700 dark:text-amber-400">
-                    Short links are <span class="font-semibold">case-sensitive</span>. Double-check the capitalization - <span class="font-mono">Abc</span> and <span class="font-mono">abc</span> lead to different destinations.
+                    Short links are <span class="font-semibold">case-sensitive</span>. Double-check the capitalization - <span class="font-mono">ABC</span> and <span class="font-mono">abc</span> lead to different destinations.
                 </p>
             </div>
 

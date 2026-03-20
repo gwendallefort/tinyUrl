@@ -60,7 +60,7 @@
         {{-- Custom alias --}}
         <div>
             <label for="create-short-code" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Custom alias <span class="text-zinc-400 dark:text-zinc-500 font-normal">(optional — auto-generated if empty)</span>
+                Custom alias <span class="text-zinc-400 dark:text-zinc-500 font-normal">(optional - auto-generated if empty)</span>
             </label>
             <div class="flex rounded-lg border border-zinc-300 dark:border-zinc-600 overflow-hidden focus-within:ring-2 focus-within:ring-zinc-900 dark:focus-within:ring-zinc-100 focus-within:border-transparent transition @error('short_code', 'createUrl') border-red-400 dark:border-red-500 @enderror">
                 <span class="flex items-center px-3 bg-zinc-50 dark:bg-zinc-700 text-sm text-zinc-500 dark:text-zinc-400 border-r border-zinc-300 dark:border-zinc-600 shrink-0">
@@ -80,7 +80,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                 </svg>
-                Aliases are case-sensitive — <span class="font-mono">Abc</span> and <span class="font-mono">abc</span> are different links.
+                Aliases are case-sensitive - ABC and abc are different links.
             </p>
         </div>
 
