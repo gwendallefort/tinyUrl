@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class ShortUrl extends Model
@@ -25,6 +26,11 @@ class ShortUrl extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function clicksLog(): HasMany
+    {
+        return $this->hasMany(ShortUrlClick::class);
     }
 
     public function shortLink(bool $withProtocol = false): string

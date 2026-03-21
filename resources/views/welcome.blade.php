@@ -90,7 +90,7 @@
                         <svg class="w-4 h-4 shrink-0 text-zinc-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
                         </svg>
-                        <span class="truncate">https://example.com/some/very/long/url/that/is/hard/to/share</span>
+                        <span class="truncate">example.com/some/very/long/url/that/is/hard/to/share</span>
                     </div>
                     <div class="flex items-center justify-center my-4">
                         <div class="flex flex-col items-center gap-1">
@@ -107,7 +107,6 @@
                             </svg>
                             <span class="truncate">{{ request()->getHost() }}/<span class="font-semibold">aB3x9k</span></span>
                         </div>
-                        <span class="shrink-0 text-xs text-zinc-400 dark:text-zinc-500 font-medium">Copy</span>
                     </div>
                 </div>
             </div>

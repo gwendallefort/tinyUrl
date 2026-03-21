@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreShortUrlRequest;
 use App\Http\Requests\UpdateShortUrlRequest;
 use App\Models\ShortUrl;
+use App\Models\ShortUrlClick;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ShortUrlController extends Controller
 {
-    public function redirect(string $code)
+    public function redirect(Request $request, string $code)
     {
         $shortUrl = ShortUrl::whereRaw('BINARY short_code = ?', [$code])->firstOrFail();
-        $this->acknowledgeClicksAsync($shortUrl);
+        $this->logClickAsync($shortUrl, $request);
 
         return redirect($shortUrl->original_url);
     }
@@ -21,7 +24,7 @@ class ShortUrlController extends Controller
     {
         $data = $request->validated();
         $data['user_id']      = auth()->id();
-        $data['short_code']   = $data['short_code'] ?: Str::random(6);
+        $data['short_code']   = $data['short_code'] ?: $this->generateUniqueShortCode();
         $data['original_url'] = ShortUrl::setProtocolIfNotSet($data['original_url']);
 
         $shortUrl = ShortUrl::create($data);
@@ -50,8 +53,47 @@ class ShortUrlController extends Controller
         return redirect()->route('home')->with('status', 'url-deleted');
     }
 
-    private function acknowledgeClicksAsync(ShortUrl $shortUrl): void
+    private function logClickAsync(ShortUrl $shortUrl, Request $request): void
     {
-        dispatch(fn () => $shortUrl->increment('clicks'))->afterResponse();
+        $shortUrlId = $shortUrl->id;
+        $headers = collect($request->headers->all())
+            ->except(['cookie', 'authorization'])
+            ->toArray();
+
+        $clickData = [
+            'short_url_id' => $shortUrlId,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'referer' => $request->headers->get('referer'),
+            'request_method' => $request->method(),
+            'host' => $request->getHost(),
+            'path' => $request->path(),
+            'query_string' => $request->getQueryString(),
+            'accept_language' => $request->headers->get('accept-language'),
+            'headers' => $headers,
+            'clicked_at' => now(),
+        ];
+
+        dispatch(function () use ($shortUrlId, $clickData) {
+
+            try {
+                ShortUrl::whereKey($shortUrlId)->increment('clicks');
+                ShortUrlClick::create($clickData);
+            } catch (\Throwable $exception) {
+                Log::error('Short URL click tracking failed.', [
+                    'short_url_id' => $shortUrlId,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        })->afterResponse();
+    }
+
+    private function generateUniqueShortCode(int $length = 6): string
+    {
+        do {
+            $shortCode = Str::random($length);
+        } while (ShortUrl::where('short_code', $shortCode)->exists());
+
+        return $shortCode;
     }
 }
