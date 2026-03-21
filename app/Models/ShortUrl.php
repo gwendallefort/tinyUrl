@@ -32,7 +32,7 @@ class ShortUrl extends Model
         if ($withProtocol) {
             return url('/' . $this->short_code);
         } else {
-            return ltrim(url('/' . $this->short_code), 'http://');
+            return preg_replace('~^https?://~i', '', url('/' . $this->short_code)) ?? url('/' . $this->short_code);
         }
     }
 
