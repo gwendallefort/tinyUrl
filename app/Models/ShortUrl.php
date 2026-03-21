@@ -45,7 +45,7 @@ class ShortUrl extends Model
     public static function setProtocolIfNotSet(string $original_url): string
     {
         if (!(preg_match('~^http?://~i', $original_url) || preg_match('~^https?://~i', $original_url))) {
-            $original_url = 'http://' . $original_url;
+            $original_url = 'https://' . $original_url;
         }
 
         return $original_url;
