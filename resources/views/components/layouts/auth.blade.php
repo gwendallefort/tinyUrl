@@ -15,21 +15,25 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col items-center justify-center p-4 antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
-    <div class="w-full max-w-md">
-        <div class="text-center mb-8">
-            <a href="{{ url('/') }}" class="inline-flex items-center gap-2 text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity">
-                @include('components/logo')
-                <span class="text-xl font-semibold tracking-tight">{{ config('app.name') }}</span>
-            </a>
-        </div>
+    <div class="flex-1 w-full flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <a href="{{ url('/') }}" class="inline-flex items-center gap-2 text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity">
+                    @include('components/logo')
+                    <span class="text-xl font-semibold tracking-tight">{{ config('app.name') }}</span>
+                </a>
+            </div>
 
-        {{-- Card --}}
-        <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-8">
-            {{ $slot }}
+            {{-- Card --}}
+            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-8">
+                {{ $slot }}
+            </div>
         </div>
     </div>
+
+    @include('partials.footer')
 
     @stack('scripts')
 </body>

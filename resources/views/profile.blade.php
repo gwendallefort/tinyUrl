@@ -13,12 +13,12 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
     @include('partials/nav')
 
     {{-- Content --}}
-    <main class="max-w-2xl mx-auto px-4 sm:px-6 py-12 space-y-6">
+    <main class="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-12 space-y-6">
 
         <div class="mb-8">
             <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Profile</h1>
@@ -198,6 +198,8 @@
         </div>
 
     </main>
+
+    @include('partials.footer')
 
     @stack('scripts')
 </body>

@@ -13,7 +13,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
     {{-- Header --}}
     <header class="border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
@@ -172,18 +172,7 @@
         </div>
     </section>
 
-    {{-- Footer --}}
-    <footer class="border-t border-zinc-200 dark:border-zinc-700 py-8">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <a href="{{ url('/') }}" class="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                @include('components/logo')
-                {{ config('app.name') }}
-            </a>
-            <p class="text-xs text-zinc-400 dark:text-zinc-500">
-                &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
-            </p>
-        </div>
-    </footer>
+    @include('partials.footer')
 
 </body>
 </html>

@@ -13,13 +13,13 @@
         @vite(['resources/css/app.css', 'resources/css/home.css', 'resources/js/app.js', 'resources/js/home.js'])
     @endif
 </head>
-<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
     {{-- Nav --}}
     @include('partials/nav')
 
     {{-- Content --}}
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
 
         {{-- Page header --}}
         <div class="mb-8 flex items-center justify-between">
@@ -185,6 +185,8 @@
         @endif
 
     </main>
+
+    @include('partials.footer')
 
     @include('partials.dialogs-create')
     @include('partials.dialogs-edit')
