@@ -14,8 +14,12 @@ class ShortUrlController extends Controller
 {
     public function redirect(Request $request, string $code)
     {
-        $shortUrl = ShortUrl::whereRaw('BINARY short_code = ?', [$code])->firstOrFail();
-        $this->logClickAsync($shortUrl, $request);
+        $shortUrl = ShortUrl::query()
+            ->select(['id', 'original_url'])
+            ->where('short_code', $code)
+            ->firstOrFail();
+
+        $this->logClickAsync($shortUrl->id, $request);
 
         return redirect($shortUrl->original_url);
     }
@@ -53,12 +57,10 @@ class ShortUrlController extends Controller
         return redirect()->route('home')->with('status', 'url-deleted');
     }
 
-    private function logClickAsync(ShortUrl $shortUrl, Request $request): void
+    private function logClickAsync(int $shortUrlId, Request $request): void
     {
-        $shortUrlId = $shortUrl->id;
-        $headers = collect($request->headers->all())
-            ->except(['cookie', 'authorization'])
-            ->toArray();
+        $headers = $request->headers->all();
+        unset($headers['cookie'], $headers['authorization']);
 
         $clickData = [
             'short_url_id' => $shortUrlId,
