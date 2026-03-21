@@ -116,6 +116,7 @@ return [
         'pulse',
         'webhooks',
         'health',
+        'healthcheck',
         'docs',
         'openapi',
         'swagger',
