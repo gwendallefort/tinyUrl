@@ -1,0 +1,68 @@
+name: Restore last backup
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "Environment to restore"
+        required: true
+        default: "staging"
+        type: choice
+        options:
+          - staging
+          - production
+
+permissions:
+  contents: read
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.target_environment }}
+    env:
+      HOSTINGER_USER: ${{ vars.HOSTINGER_USER }}
+      HOSTINGER_HOST: ${{ vars.HOSTINGER_HOST }}
+      HOSTINGER_PORT: ${{ vars.HOSTINGER_PORT }}
+      HOSTINGER_PATH: ${{ vars.HOSTINGER_PATH }}
+      SSH_OPTS: >-
+        -o IdentitiesOnly=yes
+        -o StrictHostKeyChecking=no
+        -o UserKnownHostsFile=/dev/null
+        -o ConnectTimeout=60
+        -o ServerAliveInterval=30
+        -o ServerAliveCountMax=6
+        -o TCPKeepAlive=yes
+      AUTO_CONFIRM: "true"
+    steps:
+      - name: Validate variables
+        run: |
+          : "${HOSTINGER_USER:?Set HOSTINGER_USER in GitHub Actions variables}"
+          : "${HOSTINGER_HOST:?Set HOSTINGER_HOST in GitHub Actions variables}"
+          : "${HOSTINGER_PORT:?Set HOSTINGER_PORT in GitHub Actions variables}"
+          : "${HOSTINGER_PATH:?Set HOSTINGER_PATH in GitHub Environment variables}"
+
+      - name: Normalize HOSTINGER_PATH (strip CR)
+        run: |
+          # GitHub vars pasted from Windows often contain \r and can break shell commands.
+          printf 'HOSTINGER_PATH=%s\n' "${HOSTINGER_PATH//$'\r'/}" >> "$GITHUB_ENV"
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Configure SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/hostinger_restore"
+          chmod 600 "$HOME/.ssh/hostinger_restore"
+
+      - name: Run restore script
+        env:
+          SSH_PRIVATE_KEY_PATH: ${{ runner.temp }}/hostinger_restore_key
+        run: |
+          cp "$HOME/.ssh/hostinger_restore" "$SSH_PRIVATE_KEY_PATH"
+          chmod 600 "$SSH_PRIVATE_KEY_PATH"
+          bash ./scripts/restore-last-backup.sh

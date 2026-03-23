@@ -1,0 +1,151 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+permissions:
+  contents: read
+
+env:
+  DEPLOY_ENV: &deploy_env ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: *deploy_env
+    env:
+      HOSTINGER_USER: ${{ vars.HOSTINGER_USER }}
+      HOSTINGER_HOST: ${{ vars.HOSTINGER_HOST }}
+      HOSTINGER_PORT: ${{ vars.HOSTINGER_PORT }}
+      HOSTINGER_PATH: ${{ vars.HOSTINGER_PATH }}
+      INFISICAL_ENV: *deploy_env
+      BACKUP_KEEP_COUNT: ${{ vars.BACKUP_KEEP_COUNT || '5' }}
+      SSH_OPTS: >-
+        -o IdentitiesOnly=yes
+        -o StrictHostKeyChecking=no
+        -o UserKnownHostsFile=/dev/null
+        -o ConnectTimeout=60
+        -o ServerAliveInterval=30
+        -o ServerAliveCountMax=6
+        -o TCPKeepAlive=yes
+    steps:
+      - name: Validate variables
+        run: |
+          : "${HOSTINGER_USER:?Set HOSTINGER_USER in GitHub Actions variables}"
+          : "${HOSTINGER_HOST:?Set HOSTINGER_HOST in GitHub Actions variables}"
+          : "${HOSTINGER_PORT:?Set HOSTINGER_PORT in GitHub Actions variables}"
+          : "${HOSTINGER_PATH:?Set HOSTINGER_PATH in GitHub Environment variables}"
+      - name: Normalize HOSTINGER_PATH (strip CR)
+        run: |
+          # GitHub vars pasted from Windows often contain \r and break multiline SSH commands.
+          printf 'HOSTINGER_PATH=%s\n' "${HOSTINGER_PATH//$'\r'/}" >> "$GITHUB_ENV"
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, dom, fileinfo, ctype, json, openssl, pdo, tokenizer, xml, bcmath
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build frontend assets
+        run: npm run build
+
+      # Write key to a file instead of ssh-add stdin — avoids "error in libcrypto" when
+      # the secret has wrong newlines, BOM, or non-PEM content (common GitHub Secrets issues).
+      - name: Configure SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p "$HOME/.ssh"
+          chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$HOME/.ssh/hostinger_deploy"
+          chmod 600 "$HOME/.ssh/hostinger_deploy"
+
+      # HOSTINGER_PATH often uses ~/... from Hostinger docs; inside remote "..." ~ does not expand
+      # and rsync resolves it as $HOME + literal "/~/..." — fetch remote $HOME and make path absolute.
+      - name: Resolve HOSTINGER_PATH to absolute path
+        run: |
+          REMOTE_HOME=$(ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
+            -p "$HOSTINGER_PORT" \
+            "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
+            "printf '%s' \"\$HOME\"")
+          if [[ "${HOSTINGER_PATH}" =~ ^~(/|$) ]]; then
+            HOSTINGER_PATH="${HOSTINGER_PATH/#\~/$REMOTE_HOME}"
+          fi
+          printf 'HOSTINGER_PATH=%s\n' "$HOSTINGER_PATH" >> "$GITHUB_ENV"
+
+      - name: Backup last version
+        run: |
+          BACKUP_BASE="${HOSTINGER_PATH}/backups"
+          BACKUP_DIR="${BACKUP_BASE}/backup-$(TZ=Europe/Paris date +%Y%m%d-%H%M%S)"
+          ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
+            -p "$HOSTINGER_PORT" \
+            "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
+            "mkdir -p \"${BACKUP_DIR}\" && rsync -a --exclude='vendor/' --exclude='node_modules/' --exclude='storage/' \"${HOSTINGER_PATH}/current/\" \"${BACKUP_DIR}/\""
+
+      - name: Clean up old backups
+        run: |
+          BACKUP_BASE="${HOSTINGER_PATH}/backups"
+          KEEP="$((BACKUP_KEEP_COUNT + 1))"
+          ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
+            -p "$HOSTINGER_PORT" \
+            "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
+            "ls -dt \"${BACKUP_BASE}\"/backup-* 2>/dev/null | tail -n +${KEEP} | xargs -r rm -rf"
+
+      - name: Deploy to Hostinger
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i $HOME/.ssh/hostinger_deploy $SSH_OPTS -p $HOSTINGER_PORT" \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='storage/logs' \
+            --exclude='storage/framework/cache' \
+            --exclude='storage/framework/sessions' \
+            --exclude='storage/framework/views' \
+            --exclude='storage/app/public' \
+            ./ \
+            $HOSTINGER_USER@$HOSTINGER_HOST:$HOSTINGER_PATH/current
+
+      - name: Run Laravel optimizations with Infisical
+        run: |
+          ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
+            -p "$HOSTINGER_PORT" "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
+            "bash -lc 'cd \"$HOSTINGER_PATH/current\" && \
+             mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache && \
+             command -v infisical >/dev/null 2>&1 || { echo \"infisical not found in PATH: \$PATH\"; exit 127; } && \
+             infisical run --env=${INFISICAL_ENV} --path=/ -- bash -lc \"php artisan migrate --force && php artisan config:cache && php artisan view:cache\"'"
