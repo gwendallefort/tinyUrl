@@ -28,7 +28,7 @@
                 autofocus
                 autocomplete="username"
                 placeholder="you@example.com"
-                class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg outline-none transition-colors
+                class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg transition-colors
                     {{ $errors->has('email') ? 'border-red-400 dark:border-red-600 focus:border-red-400 dark:focus:border-red-500' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
                     text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
             >
@@ -62,17 +62,22 @@
         </div>
 
         {{-- Remember me --}}
-        <div class="flex items-center gap-2.5">
+        <label for="remember" class="inline-flex items-center gap-3 cursor-pointer select-none group">
             <input
                 id="remember"
                 type="checkbox"
                 name="remember"
-                class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-zinc-100 accent-zinc-800 cursor-pointer"
+                class="size-[1.125rem] shrink-0 rounded-md border-2 border-zinc-300 bg-white shadow-sm transition-colors cursor-pointer
+                    accent-zinc-900 hover:border-zinc-400
+                    checked:border-zinc-900 checked:bg-white
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/90 dark:focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-800
+                    dark:border-zinc-500 dark:bg-zinc-900 dark:accent-zinc-100 dark:hover:border-zinc-400
+                    dark:checked:border-zinc-100 dark:checked:bg-zinc-900"
             >
-            <label for="remember" class="text-sm text-zinc-600 dark:text-zinc-400 cursor-pointer select-none">
+            <span class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug transition-colors group-hover:text-zinc-800 dark:group-hover:text-zinc-200">
                 Remember me
-            </label>
-        </div>
+            </span>
+        </label>
 
         {{-- Submit --}}
         <button

@@ -3,215 +3,176 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }} - Dashboard</title>
+    <title>{{ config('app.name') }} - Short links</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @include('partials.favicon')
 
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/css/home.css', 'resources/js/app.js', 'resources/js/home.js'])
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
 <body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
-    {{-- Nav --}}
-    @include('partials/nav')
+    {{-- Header --}}
+    <header class="border-b border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <a href="{{ url('/') }}" class="flex items-center gap-2 text-base font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+                @include('components/logo')
+                {{ config('app.name') }}
+            </a>
 
-    {{-- Content --}}
-    <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
-
-        {{-- Page header --}}
-        <div class="mb-8 flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Dashboard</h1>
-            </div>
-            <button
-                type="button"
-                onclick="document.getElementById('create-modal').showModal()"
-                class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors cursor-pointer"
-            >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                New short URL
-            </button>
+            @if (Route::has('login'))
+                <nav class="flex items-center gap-3">
+                    @auth
+                        <a href="{{ url('/dashboard') }}"
+                           class="inline-flex items-center px-4 py-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:bg-zinc-700 dark:hover:bg-white transition-colors">
+                            Dashboard
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}"
+                           class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                            Log in
+                        </a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}"
+                               class="inline-flex items-center px-4 py-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:bg-zinc-700 dark:hover:bg-white transition-colors">
+                                Get started
+                            </a>
+                        @endif
+                    @endauth
+                </nav>
+            @endif
         </div>
+    </header>
 
-        {{-- Flash: newly created URL --}}
-        @if (session('status') === 'url-created' && session('created_short_link'))
-            <div class="mb-6 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-4">
-                <div class="flex items-start gap-3">
-                    <svg class="mt-0.5 w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-emerald-800 dark:text-emerald-300">Short URL created!</p>
-                        <div class="mt-2 flex items-center gap-2">
-                            <a
-                                id="new-link"
-                                href="{{ session('created_short_link') }}"
-                                target="_blank"
-                                class="text-sm font-mono text-emerald-700 dark:text-emerald-400 hover:underline truncate"
-                            >{{ session('created_short_link') }}</a>
-                            <button
-                                type="button"
-                                onclick="copyToClipboard('{{ session('created_short_link') }}', this)"
-                                class="shrink-0 inline-flex items-center gap-1 rounded-md border border-emerald-300 dark:border-emerald-700 bg-white dark:bg-zinc-800 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer"
-                            >
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                                Copy
-                            </button>
+    {{-- Hero --}}
+    <section class="py-20 sm:py-28">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-6">
+                <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                Fast &amp; reliable redirects
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-semibold tracking-tight leading-tight text-zinc-900 dark:text-zinc-100">
+                Short links,<br>big impact
+            </h1>
+            <p class="mt-5 text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                Turn any long URL into a clean, shareable link in seconds.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}"
+                       class="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:bg-zinc-700 dark:hover:bg-white transition-colors">
+                        Start for free
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    {{-- URL preview mockup --}}
+    <section class="pb-20 sm:pb-28">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6">
+            <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-sm overflow-hidden">
+                <div class="px-4 py-3 border-b border-zinc-100 dark:border-zinc-700 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-zinc-200 dark:bg-zinc-600"></span>
+                    <span class="w-3 h-3 rounded-full bg-zinc-200 dark:bg-zinc-600"></span>
+                    <span class="w-3 h-3 rounded-full bg-zinc-200 dark:bg-zinc-600"></span>
+                    <span class="ml-2 text-xs text-zinc-400 dark:text-zinc-500 font-mono">{{ request()->getHost() }}</span>
+                </div>
+                <div class="p-6 sm:p-8">
+                    <p class="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-3">Your long URL</p>
+                    <div class="flex items-center gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 font-mono text-sm text-zinc-400 dark:text-zinc-500 overflow-hidden">
+                        <svg class="w-4 h-4 shrink-0 text-zinc-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                        <span class="truncate">example.com/some/very/long/url/that/is/hard/to/share</span>
+                    </div>
+                    <div class="flex items-center justify-center my-4">
+                        <div class="flex flex-col items-center gap-1">
+                            <svg class="w-5 h-5 text-zinc-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs font-medium text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-3">Becomes</p>
+                    <div class="flex items-center justify-between gap-3 p-3 rounded-lg bg-zinc-900 dark:bg-zinc-100 border border-zinc-900 dark:border-zinc-100">
+                        <div class="flex items-center gap-3 font-mono text-sm text-zinc-100 dark:text-zinc-900 overflow-hidden">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                            </svg>
+                            <span class="truncate">{{ request()->getHost() }}/<span class="font-semibold">aB3x9k</span></span>
                         </div>
                     </div>
                 </div>
             </div>
-        @endif
+        </div>
+    </section>
 
-        {{-- Flash: updated --}}
-        @if (session('status') === 'url-updated')
-            <div class="mb-6 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-                Short URL updated successfully.
-            </div>
-        @endif
-
-        {{-- Flash: deleted --}}
-        @if (session('status') === 'url-deleted')
-            <div class="mb-6 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
-                Short URL deleted.
-            </div>
-        @endif
-
-        {{-- URL list --}}
-        @if ($shortUrls->isEmpty())
-            <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-10 text-center">
-                <div class="mx-auto w-12 h-12 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-700 mb-4">
-                    <svg class="w-6 h-6 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                    </svg>
+    {{-- Features --}}
+    <section class="py-16 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/40">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <h2 class="text-center text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 mb-12">
+                Everything you need to share links
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="p-6 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-700 mb-4">
+                        <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Instant shortening</h3>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">Paste a URL and get a short link immediately, no setup required.</p>
                 </div>
-                <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">No short URLs yet</h2>
-                <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-5">Your shortened URLs will appear here once you create them.</p>
-                <button
-                    type="button"
-                    onclick="document.getElementById('create-modal').showModal()"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors cursor-pointer"
-                >
-                    Create your first short URL
-                </button>
+                <div class="p-6 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-700 mb-4">
+                        <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Click tracking</h3>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">See how many times your links are clicked and manage them from your dashboard.</p>
+                </div>
+                <div class="p-6 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-700 mb-4">
+                        <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Edit anytime</h3>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed">Update the destination of any link whenever you need to, without changing the short URL.</p>
+                </div>
             </div>
-        @else
-            <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-zinc-200 dark:border-zinc-700 text-left">
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">URL</th>
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide hidden sm:table-cell">Original</th>
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right">Clicks</th>
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/60">
-                        @foreach ($shortUrls as $url)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-700/30 transition-colors group">
-                                {{-- Short URL cell --}}
-                                <td class="px-5 py-4">
-                                    @if ($url->title)
-                                        <p class="font-medium text-zinc-900 dark:text-zinc-100 truncate max-w-[180px]" title="{{ $url->title }}">{{ $url->title }}</p>
-                                    @endif
-                                    <div class="flex items-center gap-1.5 mt-0.5">
-                                        <a
-                                            href="{{ $url->shortLink(1) }}"
-                                            target="_blank"
-                                            class="font-mono text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-                                        >/{{ $url->short_code }}</a>
-                                        <button
-                                            type="button"
-                                            onclick="copyToClipboard('{{ $url->shortLink() }}', this)"
-                                            class="transition-opacity p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
-                                            title="Copy short URL"
-                                        >
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                                {{-- Original URL cell --}}
-                                <td class="px-5 py-4 hidden sm:table-cell">
-                                    <a
-                                        href="{{ $url->original_url }}"
-                                        target="_blank"
-                                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors truncate block max-w-xs"
-                                        title="{{ $url->original_url }}"
-                                    >{{ $url->original_url }}</a>
-                                </td>
-                                {{-- Clicks --}}
-                                <td class="px-5 py-4 text-right tabular-nums text-zinc-700 dark:text-zinc-300 font-medium">
-                                    {{ number_format($url->clicks) }}
-                                </td>
-                                {{-- Actions --}}
-                                <td class="px-5 py-4">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <button
-                                            type="button"
-                                            onclick="openEditDialog('{{ $url->uuid }}', {{ json_encode($url->title ?? '') }}, {{ json_encode($url->original_url) }}, {{ json_encode($url->short_code) }})"
-                                            class="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                                            title="Edit"
-                                        >
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onclick="openDeleteDialog('{{ $url->uuid }}', {{ json_encode($url->title ?: $url->short_code) }})"
-                                            class="p-1.5 rounded-md text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-                                            title="Delete"
-                                        >
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
+        </div>
+    </section>
 
-    </main>
+    {{-- CTA --}}
+    <section class="py-20 sm:py-24">
+        <div class="max-w-xl mx-auto px-4 sm:px-6 text-center">
+            <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+                Ready to shorten your first link?
+            </h2>
+            <p class="mt-3 text-zinc-500 dark:text-zinc-400">
+                Create a free account and start managing your links in seconds.
+            </p>
+            @if (Route::has('register'))
+                <a href="{{ route('register') }}"
+                   class="mt-6 inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:bg-zinc-700 dark:hover:bg-white transition-colors">
+                    Create your account
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+            @endif
+        </div>
+    </section>
 
     @include('partials.footer')
-
-    @include('partials.dialogs-create')
-    @include('partials.dialogs-edit')
-    @include('partials.dialogs-delete')
-
-    <script>
-        // Re-open create dialog if there are validation errors
-        @if ($errors->createUrl->any())
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('create-modal').showModal();
-            });
-        @endif
-
-        // Re-open edit dialog if there are validation errors
-        @if ($errors->editUrl->any() && old('_edit_url_uuid'))
-            document.addEventListener('DOMContentLoaded', () => {
-                document.getElementById('edit-form').action = '/b/short-urls/{{ old('_edit_url_uuid') }}';
-                document.getElementById('edit-url-id-field').value = {!! json_encode(old('_edit_url_uuid', '')) !!};
-                document.getElementById('edit-title').value = {!! json_encode(old('title', '')) !!};
-                document.getElementById('edit-original-url').value = {!! json_encode(old('original_url', '')) !!};
-                document.getElementById('edit-short-code').value = {!! json_encode(old('short_code', '')) !!};
-                document.getElementById('edit-modal').showModal();
-            });
-        @endif
-    </script>
 
 </body>
 </html>

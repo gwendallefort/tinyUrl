@@ -6,9 +6,12 @@
                 {{ config('app.name') }}
             </a>
         </div>
-        <p class="text-xs text-zinc-400 dark:text-zinc-500">
-            &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved. v{{ config('app.version') }}
-            {{-- &middot; v{{ config('app.version') }} --}}
+        <p class="text-xs text-zinc-400 dark:text-zinc-500 text-center sm:text-right flex flex-wrap items-center justify-center sm:justify-end gap-x-2 gap-y-1">
+            <span>&copy; {{ date('Y') }} {{ config('app.name') }}</span>
+            <span class="text-zinc-300 dark:text-zinc-600" aria-hidden="true">·</span>
+            <span>v{{ config('app.version') }}</span>
+            <span class="text-zinc-300 dark:text-zinc-600" aria-hidden="true">·</span>
+            <a href="mailto:contact@lig.re" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 underline-offset-2 hover:underline">contact@lig.re</a>
         </p>
     </div>
 </footer>

@@ -6,7 +6,7 @@ use App\Http\Controllers\ShortUrlController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 // Override Fortify's forgot-password route to prevent email enumeration
@@ -15,14 +15,10 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
     ->name('password.email');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/home', function () {
-        $shortUrls = auth()->user()->shortUrls()->latest()->get();
-        return view('home', compact('shortUrls'));
-    })->name('home');
-
     Route::get('/dashboard', function () {
-        return redirect()->route('home');
-    });
+        $shortUrls = auth()->user()->shortUrls()->latest()->get();
+        return view('dashboard', compact('shortUrls'));
+    })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::put('/profile/information', [ProfileController::class, 'updateInformation'])->name('profile.update-information');

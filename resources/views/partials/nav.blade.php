@@ -6,10 +6,10 @@
         </a>
         <div class="flex items-center gap-4">
 
-            @if(request()->routeIs('home'))
+            @if(request()->routeIs('dashboard'))
                 <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Dashboard</span>
             @else
-                <a href="{{ route('home') }}" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                <a href="{{ route('dashboard') }}" class="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
                     Dashboard
                 </a>
             @endif
