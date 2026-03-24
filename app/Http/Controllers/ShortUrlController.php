@@ -44,7 +44,7 @@ class ShortUrlController extends Controller
         $shortUrl = ShortUrl::create($data);
         Cache::forget($this->redirectCacheKey($shortUrl->short_code));
 
-        return redirect()->route('home')
+        return redirect()->route('dashboard')
             ->with('status', 'url-created')
             ->with('created_short_link', $shortUrl->shortLink());
     }
@@ -59,7 +59,7 @@ class ShortUrlController extends Controller
         Cache::forget($this->redirectCacheKey($oldShortCode));
         Cache::forget($this->redirectCacheKey($shortUrl->short_code));
 
-        return redirect()->route('home')->with('status', 'url-updated');
+        return redirect()->route('dashboard')->with('status', 'url-updated');
     }
 
     public function destroy(ShortUrl $shortUrl)
@@ -70,7 +70,7 @@ class ShortUrlController extends Controller
         $shortUrl->delete();
         Cache::forget($this->redirectCacheKey($shortCode));
 
-        return redirect()->route('home')->with('status', 'url-deleted');
+        return redirect()->route('dashboard')->with('status', 'url-deleted');
     }
 
     private function logClickAsync(int $shortUrlId, Request $request): void
