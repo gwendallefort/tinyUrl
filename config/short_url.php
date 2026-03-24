@@ -132,23 +132,17 @@ return [
         'v9',
         'v10',
         'sitemap',
+        'sitemap.txt',
         'feed',
         'robots',
+        'robots.txt',
+        'images',
         'well-known',
         'wp-admin',
         'wp-login',
         'phpmyadmin',
         'server-status',
         'cgi-bin',
-
-        // Common short redirect prefixes (collision-prone)
-        'go',
-        'me',
-        'my',
-        'to',
-        'id',
-        'ok',
-        'up',
 
         // Others
         'aB3x9k' // url from the example in the welcome page

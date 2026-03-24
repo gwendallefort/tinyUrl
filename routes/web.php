@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\ShortUrlController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
 // Override Fortify's forgot-password route to prevent email enumeration
 Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])

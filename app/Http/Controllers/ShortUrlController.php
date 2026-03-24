@@ -31,7 +31,7 @@ class ShortUrlController extends Controller
 
         $this->logClickAsync($shortUrl['id'], $request);
 
-        return redirect($shortUrl['original_url']);
+        return redirect()->away($shortUrl['original_url'], 302);
     }
 
     public function store(StoreShortUrlRequest $request)
