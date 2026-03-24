@@ -7,31 +7,42 @@ use App\Http\Requests\UpdateShortUrlRequest;
 use App\Models\ShortUrl;
 use App\Models\ShortUrlClick;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ShortUrlController extends Controller
 {
+    private const REDIRECT_CACHE_TTL_SECONDS = 300; // 5 min
+
     public function redirect(Request $request, string $code)
     {
-        $shortUrl = ShortUrl::query()
-            ->select(['id', 'original_url'])
-            ->where('short_code', $code)
-            ->firstOrFail();
+        $shortUrl = Cache::remember(
+            $this->redirectCacheKey($code),
+            now()->addSeconds(self::REDIRECT_CACHE_TTL_SECONDS),
+            fn () => ShortUrl::query()
+                ->select(['id', 'short_code', 'original_url'])
+                ->where('short_code', $code)
+                ->first()
+                ?->only(['id', 'short_code', 'original_url'])
+        );
 
-        $this->logClickAsync($shortUrl->id, $request);
+        abort_if(! $shortUrl, 404);
 
-        return redirect($shortUrl->original_url);
+        $this->logClickAsync($shortUrl['id'], $request);
+
+        return redirect($shortUrl['original_url']);
     }
 
     public function store(StoreShortUrlRequest $request)
     {
         $data = $request->validated();
-        $data['user_id']      = auth()->id();
-        $data['short_code']   = $data['short_code'] ?: $this->generateUniqueShortCode();
+        $data['user_id'] = auth()->id();
+        $data['short_code'] = $data['short_code'] ?: $this->generateUniqueShortCode();
         $data['original_url'] = ShortUrl::setProtocolIfNotSet($data['original_url']);
 
         $shortUrl = ShortUrl::create($data);
+        Cache::forget($this->redirectCacheKey($shortUrl->short_code));
 
         return redirect()->route('home')
             ->with('status', 'url-created')
@@ -42,8 +53,11 @@ class ShortUrlController extends Controller
     {
         $data = $request->validated();
         $data['original_url'] = ShortUrl::setProtocolIfNotSet($data['original_url']);
+        $oldShortCode = $shortUrl->short_code;
 
         $shortUrl->update($data);
+        Cache::forget($this->redirectCacheKey($oldShortCode));
+        Cache::forget($this->redirectCacheKey($shortUrl->short_code));
 
         return redirect()->route('home')->with('status', 'url-updated');
     }
@@ -51,8 +65,10 @@ class ShortUrlController extends Controller
     public function destroy(ShortUrl $shortUrl)
     {
         abort_if($shortUrl->user_id !== auth()->id(), 403);
+        $shortCode = $shortUrl->short_code;
 
         $shortUrl->delete();
+        Cache::forget($this->redirectCacheKey($shortCode));
 
         return redirect()->route('home')->with('status', 'url-deleted');
     }
@@ -97,5 +113,10 @@ class ShortUrlController extends Controller
         } while (ShortUrl::where('short_code', $shortCode)->exists());
 
         return $shortCode;
+    }
+
+    private function redirectCacheKey(string $code): string
+    {
+        return 'short-url:redirect:'.$code;
     }
 }
