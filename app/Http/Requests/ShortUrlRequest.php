@@ -26,7 +26,7 @@ abstract class ShortUrlRequest extends FormRequest
                 },
             ],
             'short_code' => [
-                'nullable', 'string', 'min:3', 'max:20', 'alpha_dash',
+                'nullable', 'string', 'min:2', 'max:20', 'alpha_dash',
                 // avoid duplicate
                 function ($attribute, $value, $fail) use ($excludeId) {
                     $query = ShortUrl::whereRaw('BINARY short_code = ?', [$value]);
