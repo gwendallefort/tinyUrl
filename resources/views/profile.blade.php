@@ -29,6 +29,19 @@
             <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your account settings.</p>
         </div>
 
+        {{-- Log out --}}
+        <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
+            <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Log out</h2>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">End your session on this device.</p>
+
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="inline-flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors cursor-pointer">
+                    Log out
+                </button>
+            </form>
+        </div>
+
         {{-- Profile information --}}
         <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
             <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Profile information</h2>

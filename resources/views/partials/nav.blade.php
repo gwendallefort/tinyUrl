@@ -23,15 +23,6 @@
                     Profile
                 </a>
             @endif
-
-            <span class="text-zinc-300 dark:text-zinc-600">|</span>
-
-            <form method="POST" action="{{ route('logout') }}" class="flex items-center">
-                @csrf
-                <button type="submit" class="inline-flex items-center text-sm leading-5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors cursor-pointer">
-                    Log out
-                </button>
-            </form>
         </div>
     </div>
 </header>
