@@ -82,6 +82,8 @@ return [
             'keys',
             'metrics',
             'xmlrpc',
+            'files',
+            'file',
 
             // Link management features
             'stats',          // per-link analytics
