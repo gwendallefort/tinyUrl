@@ -7,7 +7,12 @@ class SeoController extends Controller
     public function robots()
     {
         $sitemap = route('sitemap');
-        $body = "User-agent: *\nAllow: /\n\nSitemap: {$sitemap}\n";
+
+        if (app()->environment('production')) {
+            $body = "User-agent: *\nAllow: /\n\nSitemap: {$sitemap}\n";
+        } else {
+            $body = "User-agent: *\nDisallow: /";
+        }
 
         return response($body, 200, [
             'Content-Type' => 'text/plain; charset=UTF-8',

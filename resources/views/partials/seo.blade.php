@@ -15,17 +15,23 @@
             : rtrim(config('app.url'), '/') . '/' . ltrim($ogImageConfig, '/');
     }
 @endphp
+
     <title>{{ $seoTitle }}</title>
     <meta name="description" content="{{ $seoDescription }}">
     <link rel="canonical" href="{{ $seoCanonical }}">
-@if ($seoNoindex)
+
+@if (! app()->environment('production'))
+    <meta name="robots" content="noindex, nofollow">
+@elseif ($seoNoindex)
     <meta name="robots" content="noindex{{ $seoNofollow ? ', nofollow' : '' }}">
 @endif
+
     <meta property="og:type" content="{{ $seoOgType }}">
     <meta property="og:title" content="{{ $seoTitle }}">
     <meta property="og:description" content="{{ $seoDescription }}">
     <meta property="og:url" content="{{ $seoCanonical }}">
     <meta property="og:site_name" content="{{ config('app.name') }}">
+
 @if ($seoOgImage)
     <meta property="og:image" content="{{ $seoOgImage }}">
     <meta name="twitter:card" content="summary_large_image">
@@ -33,8 +39,10 @@
 @else
     <meta name="twitter:card" content="summary">
 @endif
+
     <meta name="twitter:title" content="{{ $seoTitle }}">
     <meta name="twitter:description" content="{{ $seoDescription }}">
+
 @if ($seoJsonLdWebsite)
     <script type="application/ld+json">
 {!! json_encode([
