@@ -18,6 +18,10 @@ A URL shortener with authentication, custom short codes, and click tracking.
   - Docker + Docker Compose (recommended, via Laravel Sail)
   - A local MySQL server
 
+## Start app
+`./vendor/bin/sail up -d.`
+`./vendor/bin/sail npm run dev`
+
 ## Staging Access Protection
 
 When `APP_ENV=staging`, all web routes are protected by HTTP Basic Auth through middleware.

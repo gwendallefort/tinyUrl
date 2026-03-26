@@ -22,7 +22,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $testingRecipient = config('mail.to_testing');
 
-        if (! app()->environment('production') && ! empty($testingRecipient)) {
+        if (! app()->environment('production')) {
+            if (empty($testingRecipient)) {
+                abort(500, 'Test email not set.');
+            }
             Mail::alwaysTo($testingRecipient);
         }
     }

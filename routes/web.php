@@ -24,6 +24,10 @@ Route::middleware('auth')->group(function () {
         return view('dashboard', compact('shortUrls'));
     })->name('dashboard');
 
+    Route::get('/home', function () {
+        return redirect()->route('dashboard');
+    });
+
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::put('/profile/information', [ProfileController::class, 'updateInformation'])->name('profile.update-information');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
