@@ -25,10 +25,9 @@
             >
                 @csrf
                 <x-loading-submit-button
-                    formId="resend-verification-form"
                     buttonId="resend-verification-button"
                     label="Resend verification email"
-                    loadingLabel="Sending…"
+                    loadingLabel="Sending..."
                     class="w-full sm:w-auto"
                 />
             </form>

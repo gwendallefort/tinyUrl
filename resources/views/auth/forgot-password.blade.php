@@ -46,10 +46,9 @@
         </div>
 
         <x-loading-submit-button
-            formId="forgot-password-form"
             buttonId="forgot-password-submit"
             label="Send reset link"
-            loadingLabel="Sending…"
+            loadingLabel="Sending..."
             class="w-full py-2.5 dark:hover:bg-white"
         />
     </form>

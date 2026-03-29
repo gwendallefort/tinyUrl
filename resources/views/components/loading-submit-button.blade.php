@@ -1,8 +1,7 @@
 @props([
-    'formId',
     'buttonId',
     'label' => 'Submit',
-    'loadingLabel' => 'Sending…',
+    'loadingLabel' => 'Sending...',
 ])
 
 <button

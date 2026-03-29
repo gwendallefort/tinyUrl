@@ -95,10 +95,9 @@
 
                 <div class="pt-1">
                     <x-loading-submit-button
-                        formId="profile-information-form"
                         buttonId="profile-information-submit"
                         label="Save changes"
-                        loadingLabel="Saving…"
+                        loadingLabel="Saving..."
                     />
                 </div>
             </form>
@@ -115,7 +114,13 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('profile.update-password') }}" class="space-y-4">
+            <form
+                method="POST"
+                action="{{ route('profile.update-password') }}"
+                class="space-y-4"
+                data-loading-submit-form
+                data-loading-submit-button="update-password-submit"
+            >
                 @csrf
                 @method('PUT')
 
@@ -165,11 +170,13 @@
                     />
                 </div>
 
-                <div class="pt-1">
-                    <button type="submit" class="inline-flex items-center rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors cursor-pointer">
-                        Update password
-                    </button>
-                </div>
+                {{-- Submit --}}
+                <x-loading-submit-button
+                    buttonId="update-password-submit"
+                    label="Update password"
+                    loadingLabel="Updating..."
+                    class="py-2.5 dark:hover:bg-white"
+                />
             </form>
         </div>
 

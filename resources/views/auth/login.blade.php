@@ -17,7 +17,14 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}" class="space-y-5">
+    <form
+        id="login-form"
+        method="POST"
+        action="{{ route('login') }}"
+        class="space-y-5"
+        data-loading-submit-form
+        data-loading-submit-button="login-submit"
+    >
         @csrf
 
         {{-- Email --}}
@@ -86,12 +93,12 @@
         </label>
 
         {{-- Submit --}}
-        <button
-            type="submit"
-            class="w-full px-4 py-2.5 text-sm font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-white transition-colors cursor-pointer"
-        >
-            Log in
-        </button>
+        <x-loading-submit-button
+            buttonId="login-submit"
+            label="Log in"
+            loadingLabel="Logging in..."
+            class="w-full py-2.5 dark:hover:bg-white"
+        />
     </form>
 
     @if (Route::has('register'))

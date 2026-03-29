@@ -10,6 +10,13 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+@layer base {
+    input:read-only,
+    textarea:read-only {
+        @apply cursor-not-allowed bg-zinc-50 text-zinc-500 dark:bg-zinc-800/85 dark:text-zinc-400;
+    }
+}
+
 @keyframes dash {
     0% {
         stroke-dashoffset: 1;

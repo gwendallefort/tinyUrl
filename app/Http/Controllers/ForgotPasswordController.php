@@ -19,6 +19,7 @@ class ForgotPasswordController extends Controller
 
         // Return a success response regardless of whether the email exists,
         // to avoid leaking information about registered accounts.
+        sleep(1); // because the loading time is much shorter if the mail wasn't sent
         return back()->with('status', __('passwords.sent'));
     }
 }

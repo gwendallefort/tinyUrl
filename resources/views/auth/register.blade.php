@@ -4,7 +4,13 @@
     <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Create an account</h1>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Start shortening your URLs today</p>
 
-    <form method="POST" action="{{ route('register') }}" class="space-y-5">
+    <form
+        method="POST"
+        action="{{ route('register') }}"
+        class="space-y-5"
+        data-loading-submit-form
+        data-loading-submit-button="register-submit"
+    >
         @csrf
 
         {{-- Email --}}
@@ -66,12 +72,12 @@
         </div>
 
         {{-- Submit --}}
-        <button
-            type="submit"
-            class="w-full px-4 py-2.5 text-sm font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-white transition-colors cursor-pointer"
-        >
-            Create account
-        </button>
+        <x-loading-submit-button
+            buttonId="register-submit"
+            label="Create account"
+            loadingLabel="Creating the account..."
+            class="w-full py-2.5 dark:hover:bg-white"
+        />
     </form>
 
     <p class="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">

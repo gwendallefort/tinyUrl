@@ -4,7 +4,13 @@
     <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Set new password</h1>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Choose a strong password for your account.</p>
 
-    <form method="POST" action="{{ route('password.update') }}" class="space-y-5">
+    <form
+        method="POST"
+        action="{{ route('password.update') }}"
+        class="space-y-5"
+        data-loading-submit-form
+        data-loading-submit-button="reset-password-submit"
+    >
         @csrf
 
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
@@ -15,6 +21,8 @@
                 Email address
             </label>
             <input
+                readonly
+                tabindex="-1"
                 id="email"
                 type="email"
                 name="email"
@@ -22,9 +30,9 @@
                 required
                 autocomplete="username"
                 placeholder="you@example.com"
-                class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg outline-none transition-colors
+                class="w-full px-3.5 py-2.5 text-sm border rounded-lg outline-none transition-colors
                     {{ $errors->has('email') ? 'border-red-400 dark:border-red-600' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
-                    text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
+                    placeholder-zinc-400 dark:placeholder-zinc-500"
             >
             @error('email')
                 <p class="mt-1.5 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -68,11 +76,10 @@
         </div>
 
         {{-- Submit --}}
-        <button
-            type="submit"
-            class="w-full px-4 py-2.5 text-sm font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-white transition-colors cursor-pointer"
-        >
-            Reset password
-        </button>
+        <x-loading-submit-button
+            buttonId="reset-password-submit"
+            label="Reset password"
+            class="w-full py-2.5 dark:hover:bg-white"
+        />
     </form>
 </x-layouts.auth>
