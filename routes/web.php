@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SeoController;
@@ -19,25 +20,21 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
     ->name('password.email');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        $shortUrls = auth()->user()->shortUrls()->latest()->get();
-        return view('dashboard', compact('shortUrls'));
-    })->name('dashboard');
+    // dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/email/verify', fn () => redirect()->route('dashboard'))->name('verification.notice');
 
-    Route::get('/email/verify', fn () => redirect()->route('dashboard'))
-        ->middleware('auth')
-        ->name('verification.notice');
-
-    Route::get('/home', function () {
-        return redirect()->route('dashboard');
+    // profile
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('profile');
+        Route::put('/information', [ProfileController::class, 'updateInformation'])->name('profile.update-information');
+        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
-    Route::put('/profile/information', [ProfileController::class, 'updateInformation'])->name('profile.update-information');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    // back-end group
     Route::prefix('b')->group(function () {
+        // short urls
         Route::post('/short-urls', [ShortUrlController::class, 'store'])->name('short-urls.store');
         Route::put('/short-urls/{shortUrl}', [ShortUrlController::class, 'update'])->name('short-urls.update');
         Route::delete('/short-urls/{shortUrl}', [ShortUrlController::class, 'destroy'])->name('short-urls.destroy');
