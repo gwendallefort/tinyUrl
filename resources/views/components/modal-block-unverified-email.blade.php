@@ -5,6 +5,16 @@
             <h2 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Verify your email</h2>
         </div>
 
+        @if (session('status') === 'verification-link-expired')
+            <div class="mb-4 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-4 py-3 text-sm text-amber-800 dark:text-amber-200" role="alert">
+                <span class="font-semibold">This verification link no longer works.</span>
+                <br>
+                That usually means the link expired or you requested a different email address afterward.
+                <br>
+                Go to your profile to resend one, and open the verification link from your most recent email
+            </div>
+        @endif
+
         <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
             Please verify your email address to unlock the dashboard features. We sent you a verification link.
         </p>
