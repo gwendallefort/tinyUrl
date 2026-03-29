@@ -38,8 +38,6 @@
                                             <br><br>
                                             We received a request to reset the password for your <strong>{{ config('app.name') }}</strong> account.
                                             Click the button below to choose a new password.
-                                            <br><br>
-                                            If you did not request a password reset, you can safely ignore this email - your password will not change.
                                         </p>
                                     </td>
                                 </tr>
@@ -59,11 +57,15 @@
                                             Reset password
                                         </a>
                                         <!--<![endif]-->
+                                    </td>
+                                </tr>
 
-                                        {{-- Expiry notice --}}
-                                        <p style="margin:0;font-size:13px;line-height:1.6;color:#71717a;">
-                                            <br>
-                                            This link will expire in <strong>{{ $expiresMinutes }} minutes</strong>.
+                                <tr>
+                                    <td style="padding-bottom:28px;">
+                                        <p style="margin:0;font-size:15px;line-height:1.6;color:#52525b;">
+                                            This link will expire in {{ $expiresMinutes }} minutes.
+                                            <br><br>
+                                            If you did not request a password reset, you can safely ignore this email - your password will not change.
                                         </p>
                                     </td>
                                 </tr>
