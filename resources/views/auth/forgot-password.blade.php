@@ -12,7 +12,14 @@
         </div>
     @endif
 
-    <form id="forgot-password-form" method="POST" action="{{ route('password.email') }}" class="space-y-5">
+    <form
+        id="forgot-password-form"
+        method="POST"
+        action="{{ route('password.email') }}"
+        class="space-y-5"
+        data-loading-submit-form
+        data-loading-submit-button="forgot-password-submit"
+    >
         @csrf
 
         {{-- Email --}}
@@ -38,21 +45,13 @@
             @enderror
         </div>
 
-        {{-- Submit --}}
-        <button
-            id="forgot-password-submit"
-            type="submit"
-            class="w-full px-4 py-2.5 text-sm font-medium text-white bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 rounded-lg hover:bg-zinc-700 dark:hover:bg-white transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-            <span id="forgot-password-submit-text">Send reset link</span>
-            <span id="forgot-password-submit-loading" class="hidden items-center gap-2">
-                <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"></path>
-                </svg>
-                Sending...
-            </span>
-        </button>
+        <x-loading-submit-button
+            formId="forgot-password-form"
+            buttonId="forgot-password-submit"
+            label="Send reset link"
+            loadingLabel="Sending…"
+            class="w-full py-2.5 dark:hover:bg-white"
+        />
     </form>
 
     <p class="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
@@ -61,25 +60,4 @@
             Back to log in
         </a>
     </p>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('forgot-password-form');
-            const submitButton = document.getElementById('forgot-password-submit');
-            const submitText = document.getElementById('forgot-password-submit-text');
-            const loadingIndicator = document.getElementById('forgot-password-submit-loading');
-
-            if (!form || !submitButton || !submitText || !loadingIndicator) {
-                return;
-            }
-
-            form.addEventListener('submit', function () {
-                submitButton.disabled = true;
-                submitButton.setAttribute('aria-busy', 'true');
-                submitText.classList.add('hidden');
-                loadingIndicator.classList.remove('hidden');
-                loadingIndicator.classList.add('inline-flex');
-            });
-        });
-    </script>
 </x-layouts.auth>

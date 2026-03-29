@@ -53,7 +53,14 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('profile.update-information') }}" class="space-y-4">
+            <form
+                id="profile-information-form"
+                method="POST"
+                action="{{ route('profile.update-information') }}"
+                class="space-y-4"
+                data-loading-submit-form
+                data-loading-submit-button="profile-information-submit"
+            >
                 @csrf
                 @method('PUT')
 
@@ -75,9 +82,12 @@
                 </div>
 
                 <div class="pt-1">
-                    <button type="submit" class="inline-flex items-center rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors cursor-pointer">
-                        Save changes
-                    </button>
+                    <x-loading-submit-button
+                        formId="profile-information-form"
+                        buttonId="profile-information-submit"
+                        label="Save changes"
+                        loadingLabel="Saving…"
+                    />
                 </div>
             </form>
         </div>

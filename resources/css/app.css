@@ -9,3 +9,23 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@keyframes dash {
+    0% {
+        stroke-dashoffset: 1;
+    }
+    50% {
+        stroke-dashoffset: 0;
+    }
+    50.01% {
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dashoffset: -1;
+    }
+}
+
+.anim-logo {
+    stroke-dasharray: 0.4 0.6;
+    animation: dash 2s linear infinite;
+}
