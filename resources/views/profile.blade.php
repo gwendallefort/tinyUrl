@@ -53,6 +53,18 @@
                 </div>
             @endif
 
+            @if (session('status') === 'email-change-pending')
+                <div class="mb-4 rounded-lg bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800 px-4 py-3 text-sm text-sky-800 dark:text-sky-200">
+                    We sent a verification link to <strong class="font-medium">{{ auth()->user()->pending_email }}</strong>. Your sign-in email stays the same until you confirm.
+                </div>
+            @endif
+
+            @if (auth()->user()->pending_email && session('status') !== 'email-change-pending')
+                <div class="mb-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+                    Pending change: confirm <strong class="font-medium">{{ auth()->user()->pending_email }}</strong> via the email we sent.
+                </div>
+            @endif
+
             <form
                 id="profile-information-form"
                 method="POST"

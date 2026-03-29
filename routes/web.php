@@ -24,6 +24,10 @@ Route::middleware('auth')->group(function () {
         return view('dashboard', compact('shortUrls'));
     })->name('dashboard');
 
+    Route::get('/email/verify', fn () => redirect()->route('dashboard'))
+        ->middleware('auth')
+        ->name('verification.notice');
+
     Route::get('/home', function () {
         return redirect()->route('dashboard');
     });

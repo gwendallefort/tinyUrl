@@ -18,7 +18,13 @@ class ProfileController extends Controller
 
     public function updateInformation(Request $request, UpdateUserProfileInformation $updater): RedirectResponse
     {
-        $updater->update($request->user(), $request->only('name', 'email'));
+        $user = $request->user();
+        $updater->update($user, $request->only('name', 'email'));
+        $user->refresh();
+
+        if (filled($user->pending_email)) {
+            return back()->with('status', 'email-change-pending');
+        }
 
         return back()->with('status', 'profile-updated');
     }

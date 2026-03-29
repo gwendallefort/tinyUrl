@@ -22,8 +22,17 @@
     {{-- Nav --}}
     @include('partials/nav')
 
+    @php
+        $mustVerify = auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail;
+        $isVerified = ! $mustVerify || auth()->user()->hasVerifiedEmail();
+    @endphp
+
+    @if (! $isVerified)
+        @include('components/modal-block-unverified-email')
+    @endif
+
     {{-- Content --}}
-    <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-12 {{ ! $isVerified ? 'pointer-events-none select-none opacity-60' : '' }}" aria-hidden="{{ ! $isVerified ? 'true' : 'false' }}">
 
         {{-- Page header --}}
         <div class="mb-8 flex items-center justify-between">
@@ -41,6 +50,31 @@
                 New short URL
             </button>
         </div>
+
+        {{-- Flash: email verified --}}
+        @php
+            $user = auth()->user();
+            $verifyNoticeUrl = route('verification.notice');
+            $previousUrl = url()->previous();
+            $cameFromVerifyNotice = is_string($previousUrl)
+                && is_string($verifyNoticeUrl)
+                && str_starts_with($previousUrl, $verifyNoticeUrl);
+        @endphp
+        @if ($user && method_exists($user, 'hasVerifiedEmail') && $user->hasVerifiedEmail() && $cameFromVerifyNotice && empty($user->pending_email))
+            <div class="mb-6 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
+                Your email address has been verified successfully.
+            </div>
+        @endif
+
+        @if (session('status') === 'verification-link-expired')
+            <div class="mb-6 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+                 <span class="font-semibold">This verification link no longer works.</span>
+                 <br>
+                 That usually means the link expired or you requested a different email address afterward.
+                 <br>
+                 Go to your profile to resend one, and open the verification link from your most recent email
+            </div>
+        @endif
 
         {{-- Flash: newly created URL --}}
         @if (session('status') === 'url-created' && session('created_short_link'))
@@ -214,6 +248,8 @@
             });
         @endif
     </script>
+
+    @stack('scripts')
 
 </body>
 </html>

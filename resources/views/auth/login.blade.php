@@ -4,6 +4,12 @@
     <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Welcome back</h1>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Log in to your account to continue</p>
 
+    @if (is_string(session('url.intended')) && str_contains(session('url.intended'), '/email/verify/'))
+        <div class="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm text-amber-900 dark:text-amber-200">
+            You opened a link to verify a <strong>new</strong> email address. Sign in with the email address <strong>already on your account</strong> (not the new one).
+        </div>
+    @endif
+
     {{-- Session status (e.g. after password reset) --}}
     @if (session('status'))
         <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-sm text-green-700 dark:text-green-400">
