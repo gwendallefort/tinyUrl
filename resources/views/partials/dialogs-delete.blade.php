@@ -1,7 +1,9 @@
 <dialog
     id="delete-modal"
     class="m-auto w-full max-w-md rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-xl p-6 backdrop:bg-black/50 open:flex open:flex-col"
+    onclick="if (event.target === this) this.close()"
 >
+    <div class="contents" onclick="event.stopPropagation()">
     <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Delete short URL?</h3>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-1">
         You are about to delete:
@@ -29,4 +31,5 @@
             </button>
         </div>
     </form>
+    </div>
 </dialog>

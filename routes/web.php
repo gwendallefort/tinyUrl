@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('b')->group(function () {
         // short urls
         Route::post('/short-urls', [ShortUrlController::class, 'store'])->name('short-urls.store');
+        Route::get('/short-urls/{shortUrl}/qr', [ShortUrlController::class, 'qr'])->name('short-urls.qr');
         Route::put('/short-urls/{shortUrl}', [ShortUrlController::class, 'update'])->name('short-urls.update');
         Route::delete('/short-urls/{shortUrl}', [ShortUrlController::class, 'destroy'])->name('short-urls.destroy');
     });

@@ -6,6 +6,10 @@ use App\Http\Requests\StoreShortUrlRequest;
 use App\Http\Requests\UpdateShortUrlRequest;
 use App\Models\ShortUrl;
 use App\Models\ShortUrlClick;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -60,6 +64,26 @@ class ShortUrlController extends Controller
         Cache::forget($this->redirectCacheKey($shortUrl->short_code));
 
         return redirect()->route('dashboard')->with('status', 'url-updated');
+    }
+
+    public function qr(ShortUrl $shortUrl)
+    {
+        abort_if($shortUrl->user_id !== auth()->id(), 403);
+
+        $result = (new Builder(
+            writer: new PngWriter,
+            validateResult: false,
+            data: $shortUrl->shortLink(true),
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Medium,
+            size: 280,
+            margin: 10,
+        ))->build();
+
+        return response($result->getString(), 200, [
+            'Content-Type' => $result->getMimeType(),
+            'Content-Disposition' => 'inline; filename="qr-'.$shortUrl->short_code.'.png"',
+        ]);
     }
 
     public function destroy(ShortUrl $shortUrl)

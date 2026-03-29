@@ -13,6 +13,15 @@ function openDeleteDialog(id, label) {
     document.getElementById('delete-modal').showModal();
 }
 
+function openQrDialog(imageUrl, shortPathLabel) {
+    const img = document.getElementById('qr-modal-image');
+    const download = document.getElementById('qr-modal-download');
+    document.getElementById('qr-modal-label').textContent = shortPathLabel;
+    img.src = imageUrl;
+    download.href = imageUrl;
+    document.getElementById('qr-modal').showModal();
+}
+
 function copyToClipboard(text, btn) {
     const markCopied = () => {
         btn.dataset.copied = '';
@@ -35,4 +44,5 @@ function copyToClipboard(text, btn) {
 
 window.openEditDialog = openEditDialog;
 window.openDeleteDialog = openDeleteDialog;
+window.openQrDialog = openQrDialog;
 window.copyToClipboard = copyToClipboard;
