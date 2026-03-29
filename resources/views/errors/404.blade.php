@@ -24,8 +24,8 @@
         <div class="w-full max-w-md text-center">
 
         {{-- Logo + app name --}}
-        <a href="{{ url('/') }}" class="inline-flex items-center gap-2 text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity mb-10">
-            @include('components/logo')
+        <a href="{{ url('/') }}" class="site-logo-a inline-flex items-center gap-2 text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity mb-10">
+            @include('components/logo', ['pathClass' => 'site-logo-path'])
             <span class="text-xl font-semibold tracking-tight">{{ config('app.name') }}</span>
         </a>
 

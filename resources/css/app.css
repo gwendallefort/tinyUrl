@@ -25,7 +25,12 @@
     }
 }
 
-.anim-logo {
+@utility anim-logo {
     stroke-dasharray: 0.4 0.6;
     animation: dash 2s linear infinite;
+}
+
+@utility anim-logo2 {
+    stroke-dasharray: 1;
+    animation: dash 1.5s linear infinite;
 }

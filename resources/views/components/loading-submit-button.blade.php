@@ -27,6 +27,7 @@
             xmlns="http://www.w3.org/2000/svg"
         >
             <path
+                id="js-btn-loading-path"
                 class="anim-logo"
                 pathLength="1"
                 d="M14.84,14.82a3.73,3.73,0,1,0-.2-5.46L9.36,14.64a3.73,3.73,0,1,1-.2-5.46Z"
@@ -60,6 +61,8 @@
 
                         const label = btn.querySelector('.js-btn-label');
                         const loading = btn.querySelector('.js-btn-loading');
+                        const path = btn.querySelector('#js-btn-loading-path');
+                        path.classList.add(Math.random() < 0.5 ? 'anim-logo' : 'anim-logo2');
                         if (label) label.classList.add('hidden');
                         if (loading) loading.classList.remove('hidden');
                     }, { once: true });

@@ -24,8 +24,8 @@
     <div class="flex-1 w-full flex items-center justify-center p-4">
         <div class="w-full max-w-md">
             <div class="text-center mb-8">
-                <a href="{{ url('/') }}" class="inline-flex items-center gap-2 text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity">
-                    @include('components/logo')
+                <a href="{{ url('/') }}" class="site-logo-a inline-flex items-center gap-2 text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity">
+                    @include('components/logo', ['pathClass' => 'site-logo-path'])
                     <span class="text-xl font-semibold tracking-tight">{{ config('app.name') }}</span>
                 </a>
             </div>
