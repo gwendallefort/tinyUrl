@@ -1,7 +1,5 @@
 # TinyUrl
 
-A URL shortener with authentication, custom short codes, and click tracking.
-
 ## Tech Stack
 
 - PHP 8.3
@@ -19,8 +17,11 @@ A URL shortener with authentication, custom short codes, and click tracking.
   - A local MySQL server
 
 ## Start app
-`./vendor/bin/sail up -d.`
-`./vendor/bin/sail npm run dev`
+- `./vendor/bin/sail up -d.`
+- `./vendor/bin/sail npm run dev`
+
+## Secret Manager
+On staging and production, the secret are injected using [Infisical](https://infisical.com/).
 
 ## Staging Access Protection
 
