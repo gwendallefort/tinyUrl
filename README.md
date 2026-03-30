@@ -20,6 +20,15 @@
 - `./vendor/bin/sail up -d.`
 - `./vendor/bin/sail npm run dev`
 
+## Useful commands
+#### Run the test
+  - `./vendor/bin/sail test`
+  - `./vendor/bin/sail test -filter {test_name}`
+#### Run factory exemple
+- `./vendor/bin/sail artisan tinker`
+- `\App\Models\ShortUrl::factory()->count(9)->create();`
+
+
 ## Secret Manager
 On staging and production, the secret are injected using [Infisical](https://infisical.com/).
 
