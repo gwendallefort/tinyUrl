@@ -1,6 +1,6 @@
 <script>
 (function () {
-    var key = 'tinyurl-theme';
+    var key = 'storage-theme';
     var root = document.documentElement;
     var t = localStorage.getItem(key);
     if (t === 'light') root.classList.remove('dark');

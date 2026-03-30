@@ -1,4 +1,4 @@
-const THEME_STORAGE_KEY = 'lig.re-theme';
+const THEME_STORAGE_KEY = 'storage-theme';
 
 function showThemeTooltip(btn, themeName) {
     if (!btn) return;
@@ -33,7 +33,7 @@ function applyStoredOrSystemTheme() {
 function cycleColorScheme(btn) {
     const root = document.documentElement;
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    let switchedTo = 'light';
+    let switchedTo;
 
     if (stored === 'light') {
         localStorage.setItem(THEME_STORAGE_KEY, 'dark');
