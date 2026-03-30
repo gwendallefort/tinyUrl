@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\ShortUrlController;
@@ -13,6 +14,8 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+Route::get('/up', HealthCheckController::class);
 
 // Override Fortify's forgot-password route to prevent email enumeration
 Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
