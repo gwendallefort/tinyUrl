@@ -26,7 +26,6 @@ class HealthCheckController extends Controller
 
         return response()->view('up', [
             'exception' => $exception,
-            'responseTimeMs' => (hrtime(true) - $start) / 1_000_000,
         ], $exception ? 500 : 200);
     }
 }

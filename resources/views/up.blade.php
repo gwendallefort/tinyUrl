@@ -1,42 +1,46 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @include('partials.theme-init')
-    <title>{{ config('app.name') }} - Health</title>
 
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @endif
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+
+    <!-- Styles -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <style type="text/tailwindcss">
+        @theme {
+            --font-sans: 'Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif', "Apple Color Emoji", "Segoe UI Emoji";
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
-    <main class="min-h-screen flex items-center justify-center px-4">
-        <div class="w-full max-w-xl rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-8 shadow-sm">
-            <div class="flex items-center gap-3">
-                <span class="inline-flex h-3 w-3 rounded-full {{ $exception ? 'bg-red-500' : 'bg-green-500' }}"></span>
-                <h1 class="text-2xl font-semibold tracking-tight">
-                    {{ $exception ? 'Health check failed' : 'Application is up' }}
-                </h1>
+<body class="antialiased">
+<div class="relative flex justify-center items-center min-h-screen bg-gray-100 selection:bg-red-500 selection:text-white">
+    <div class="w-full sm:w-3/4 xl:w-1/2 mx-auto p-6">
+        <div class="px-6 py-4 bg-white from-gray-700/50 via-transparent rounded-lg shadow-2xl shadow-gray-500/20 flex items-center focus:outline focus:outline-2 focus:outline-red-500">
+            <div class="relative flex h-3 w-3 group {{ $exception ? 'status-down' : null }}">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 group-[.status-down]:bg-red-600 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-400 group-[.status-down]:bg-red-600"></span>
             </div>
 
-            <p class="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-                {{ $exception ? 'A health check exception was reported.' : 'All health checks passed successfully.' }}
-            </p>
-            <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                Response time: {{ number_format($responseTimeMs, 2) }} ms
-            </p>
-            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                Version: v{{ config('app.version') }}
-            </p>
+            <div class="ml-6">
+                <h2 class="text-xl font-semibold text-gray-900">Application {{ $exception ? 'experiencing problems' : 'up' }}</h2>
 
-            @if ($exception)
-                <div class="mt-6 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 p-4">
-                    <p class="text-xs font-medium uppercase tracking-wide text-red-700 dark:text-red-300">Exception</p>
-                    <p class="mt-2 text-sm text-red-800 dark:text-red-200 break-words">{{ $exception }}</p>
-                </div>
-            @endif
+                <p class="mt-2 text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                    HTTP request received.
+
+                    @if (defined('LARAVEL_START'))
+                        Response rendered in {{ round((microtime(true) - LARAVEL_START) * 1000) }}ms.
+                    @endif
+                </p>
+            </div>
         </div>
-    </main>
+    </div>
+</div>
 </body>
 </html>
