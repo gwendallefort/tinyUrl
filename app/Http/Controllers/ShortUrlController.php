@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 class ShortUrlController extends Controller
 {
     private const REDIRECT_CACHE_TTL_SECONDS = 300; // 5 min
+    private const MAX_SHORT_URLS_PER_DAY = 10;
 
     public function redirect(Request $request, string $code)
     {
@@ -40,8 +41,23 @@ class ShortUrlController extends Controller
 
     public function store(StoreShortUrlRequest $request)
     {
+        $userId = auth()->id();
+        $createdInLast24Hours = ShortUrl::query()
+            ->where('user_id', $userId)
+            ->where('created_at', '>=', now()->subDay())
+            ->count();
+
+        if ($createdInLast24Hours >= self::MAX_SHORT_URLS_PER_DAY) {
+            return back()
+                ->withErrors([
+                    'original_url' => 'You can only create up to ' . self::MAX_SHORT_URLS_PER_DAY
+                        . ' short URLs in a 24-hour period.',
+                ], $request->errorBag)
+                ->withInput();
+        }
+
         $data = $request->validated();
-        $data['user_id'] = auth()->id();
+        $data['user_id'] = $userId;
         $data['short_code'] = $data['short_code'] ?: $this->generateUniqueShortCode();
         $data['original_url'] = ShortUrl::setProtocolIfNotSet($data['original_url']);
 

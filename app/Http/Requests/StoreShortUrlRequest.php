@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 class StoreShortUrlRequest extends ShortUrlRequest
 {
-    protected $errorBag = 'createUrl';
+    public $errorBag = 'createUrl';
 
     public function authorize(): bool
     {
