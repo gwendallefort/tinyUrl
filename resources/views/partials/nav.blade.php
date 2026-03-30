@@ -4,7 +4,8 @@
             @include('components/logo', ['pathClass' => 'site-logo-path'])
             {{ config('app.name') }}
         </a>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 sm:gap-4">
+            @include('partials.theme-toggle')
 
             @if(request()->routeIs('dashboard'))
                 <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Dashboard</span>

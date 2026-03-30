@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.theme-init')
     @include('partials.seo', [
         'title' => config('app.name') . ' - Profile',
         'description' => config('seo.default_description'),

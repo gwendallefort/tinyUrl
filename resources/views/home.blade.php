@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.theme-init')
     @include('partials.seo', [
         'title' => config('app.name') . ' - Short links',
         'description' => config('seo.home_description'),
@@ -29,7 +30,8 @@
             </a>
 
             @if (Route::has('login'))
-                <nav class="flex items-center gap-3">
+                <nav class="flex items-center gap-2 sm:gap-3">
+                    @include('partials.theme-toggle')
                     @auth
                         <a href="{{ url('/dashboard') }}"
                            class="inline-flex items-center px-4 py-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:bg-zinc-700 dark:hover:bg-white transition-colors">

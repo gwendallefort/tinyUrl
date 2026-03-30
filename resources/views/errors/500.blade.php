@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    @include('partials.theme-init')
     @include('partials.seo', [
         'title' => config('app.name') . ' - 500 Server Error',
         'description' => 'Something went wrong. Please try again later.',
@@ -18,7 +19,11 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+<body class="relative bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+
+    <div class="absolute top-4 right-4 z-10">
+        @include('partials.theme-toggle')
+    </div>
 
     <div class="flex-1 w-full flex items-center justify-center p-4">
         <div class="w-full max-w-md text-center">

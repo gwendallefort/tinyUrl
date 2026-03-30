@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @include('partials.theme-init')
 
     @include('partials.seo', [
         'title' => config('app.name') . ' - Verify email',
@@ -19,7 +20,11 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+<body class="relative bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
+
+    <div class="fixed top-4 right-4 z-20">
+        @include('partials.theme-toggle')
+    </div>
 
     <dialog
         open
