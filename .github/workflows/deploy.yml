@@ -66,7 +66,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Install Composer dependencies
+      - name: Install Composer dependencies (including dev for tests)
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Prepare Laravel .env for tests
+        run: |
+          cp .env.example .env
+          php artisan key:generate --ansi
+
+      - name: Run backend tests
+        run: php artisan test --without-tty
+
+      - name: Reinstall production Composer dependencies
         run: composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Setup Node.js

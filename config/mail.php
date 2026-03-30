@@ -125,6 +125,6 @@ return [
     |
     */
 
-    'to_testing' => env('MAIL_TO_TESTING'),
+    'to_testing' => env('MAIL_TO_TESTING', 'catch@sharebot.net'),
 
 ];
