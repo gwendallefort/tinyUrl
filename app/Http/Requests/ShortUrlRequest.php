@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\ShortUrl;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 abstract class ShortUrlRequest extends FormRequest
@@ -29,7 +30,13 @@ abstract class ShortUrlRequest extends FormRequest
                 'nullable', 'string', 'min:2', 'max:20', 'alpha_dash',
                 // avoid duplicate
                 function ($attribute, $value, $fail) use ($excludeId) {
-                    $query = ShortUrl::whereRaw('BINARY short_code = ?', [$value]);
+                    $query = ShortUrl::query();
+
+                    if (DB::connection()->getDriverName() === 'mysql') {
+                        $query->whereRaw('BINARY short_code = ?', [$value]);
+                    } else {
+                        $query->where('short_code', $value);
+                    }
 
                     if ($excludeId !== null) {
                         $query->where('id', '!=', $excludeId);
