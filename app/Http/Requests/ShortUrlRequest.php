@@ -62,6 +62,17 @@ abstract class ShortUrlRequest extends FormRequest
 
                     if (in_array($value, $reserved)) {
                         $fail(trans('validation_short_url.short_code.taken'));
+
+                        return;
+                    }
+
+                    $normalized = strtolower((string) $value);
+                    foreach (config('short_url.reserved_prefixes', []) as $prefix) {
+                        if (str_starts_with($normalized, strtolower((string) $prefix))) {
+                            $fail(trans('validation_short_url.short_code.taken'));
+
+                            return;
+                        }
                     }
                 },
             ],

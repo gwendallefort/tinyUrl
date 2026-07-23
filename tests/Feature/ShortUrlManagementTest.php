@@ -47,6 +47,20 @@ class ShortUrlManagementTest extends TestCase
             ->assertSessionHasErrors(['short_code'], null, 'createUrl');
     }
 
+    public function test_reserved_prefix_short_code_is_rejected(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->from('/dashboard')
+            ->post('/b/short-urls', [
+                'original_url' => 'example.com',
+                'short_code' => 'livewire-update',
+            ])
+            ->assertRedirect('/dashboard')
+            ->assertSessionHasErrors(['short_code'], null, 'createUrl');
+    }
+
     public function test_self_referencing_destination_is_rejected(): void
     {
         $user = User::factory()->create();

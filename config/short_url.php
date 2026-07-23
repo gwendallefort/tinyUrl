@@ -18,6 +18,11 @@ $twoCharCodes = (function (): array {
 })();
 
 return [
+    // Reject any short code that starts with these prefixes (case-insensitive).
+    'reserved_prefixes' => [
+        'livewire',
+    ],
+
     'reserved_codes' => array_unique(array_merge(
         // Block all two-character string (alpha_dash ASCII: a-z, A-Z, 0-9, _, -)
         $twoCharCodes,
