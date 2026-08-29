@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Notifications\ResetPassword as ResetPasswordNotification;
+use App\Support\SoftDeleteTombstone;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
@@ -19,7 +21,23 @@ use Illuminate\Notifications\Notification;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::deleting(function (self $user) {
+            if ($user->isForceDeleting()) {
+                return;
+            }
+
+            $user->forceFill([
+                'email' => SoftDeleteTombstone::value($user->id, $user->email),
+                'pending_email' => null,
+            ])->saveQuietly();
+
+            $user->shortUrls()->each(fn (ShortUrl $shortUrl) => $shortUrl->delete());
+        });
+    }
 
     /**
      * Get the attributes that should be cast.

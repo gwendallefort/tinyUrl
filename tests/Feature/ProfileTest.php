@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\ShortUrl;
 use App\Models\User;
+use App\Support\SoftDeleteTombstone;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -70,7 +72,49 @@ class ProfileTest extends TestCase
             ->delete('/profile', ['password' => 'DeleteMe1!'])
             ->assertRedirect('/');
 
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertSoftDeleted('users', ['id' => $user->id]);
         $this->assertGuest();
+    }
+
+    public function test_deleted_user_can_register_again_with_same_email(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'returning@example.com',
+            'password' => Hash::make('DeleteMe1!'),
+        ]);
+
+        $this->actingAs($user)
+            ->delete('/profile', ['password' => 'DeleteMe1!'])
+            ->assertRedirect('/');
+
+        $this->post('/register', [
+            'email' => 'returning@example.com',
+            'password' => 'NewUser1!',
+            'password_confirmation' => 'NewUser1!',
+        ])->assertRedirect(route('dashboard', absolute: false));
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'returning@example.com',
+            'deleted_at' => null,
+        ]);
+    }
+
+    public function test_deleting_user_soft_deletes_their_short_urls(): void
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('DeleteMe1!'),
+        ]);
+        $shortUrl = ShortUrl::factory()->for($user)->create(['short_code' => 'user-link']);
+
+        $this->actingAs($user)
+            ->delete('/profile', ['password' => 'DeleteMe1!'])
+            ->assertRedirect('/');
+
+        $this->assertSoftDeleted('short_urls', ['id' => $shortUrl->id]);
+        $this->assertDatabaseHas('short_urls', [
+            'id' => $shortUrl->id,
+            'short_code' => SoftDeleteTombstone::value($shortUrl->id, 'user-link'),
+        ]);
+        $this->get('/user-link')->assertNotFound();
     }
 }

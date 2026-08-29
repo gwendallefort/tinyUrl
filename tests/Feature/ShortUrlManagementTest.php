@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\ShortUrl;
 use App\Models\User;
+use App\Support\SoftDeleteTombstone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
@@ -130,6 +131,54 @@ class ShortUrlManagementTest extends TestCase
             ->assertSessionHas('status', 'url-deleted');
 
         $this->assertNull(Cache::get($cacheKey));
-        $this->assertDatabaseMissing('short_urls', ['id' => $shortUrl->id]);
+        $this->assertSoftDeleted('short_urls', ['id' => $shortUrl->id]);
+        $this->assertDatabaseHas('short_urls', [
+            'id' => $shortUrl->id,
+            'short_code' => SoftDeleteTombstone::value($shortUrl->id, 'to-delete'),
+        ]);
+        $this->get('/to-delete')->assertNotFound();
+    }
+
+    public function test_deleted_short_code_can_be_reused(): void
+    {
+        $user = User::factory()->create();
+        $shortUrl = ShortUrl::factory()->for($user)->create(['short_code' => 'reusable']);
+
+        $this->actingAs($user)
+            ->delete('/b/short-urls/'.$shortUrl->uuid)
+            ->assertRedirect(route('dashboard', absolute: false));
+
+        $this->actingAs($user)
+            ->post('/b/short-urls', [
+                'original_url' => 'example.com/new',
+                'short_code' => 'reusable',
+            ])
+            ->assertRedirect(route('dashboard', absolute: false))
+            ->assertSessionHas('status', 'url-created');
+
+        $this->assertDatabaseHas('short_urls', [
+            'user_id' => $user->id,
+            'short_code' => 'reusable',
+            'deleted_at' => null,
+        ]);
+    }
+
+    public function test_deleting_short_url_preserves_click_records(): void
+    {
+        $user = User::factory()->create();
+        $shortUrl = ShortUrl::factory()->for($user)->create(['short_code' => 'tracked']);
+
+        $this->get('/tracked')->assertRedirect($shortUrl->original_url);
+
+        $this->assertDatabaseHas('short_url_clicks', [
+            'short_url_id' => $shortUrl->id,
+        ]);
+
+        $this->actingAs($user)
+            ->delete('/b/short-urls/'.$shortUrl->uuid)
+            ->assertRedirect(route('dashboard', absolute: false));
+
+        $this->assertSoftDeleted('short_urls', ['id' => $shortUrl->id]);
+        $this->assertDatabaseHas('short_url_clicks', ['short_url_id' => $shortUrl->id]);
     }
 }

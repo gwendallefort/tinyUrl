@@ -14,7 +14,6 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -189,7 +188,7 @@ class ShortUrlController extends Controller
     {
         do {
             $shortCode = Str::random($length);
-        } while (ShortUrl::where('short_code', $shortCode)->exists());
+        } while (ShortUrl::shortCodeExists($shortCode));
 
         return $shortCode;
     }
@@ -200,15 +199,7 @@ class ShortUrlController extends Controller
             return false;
         }
 
-        $query = ShortUrl::query();
-
-        if (DB::connection()->getDriverName() === 'mysql') {
-            $query->whereRaw('BINARY short_code = ?', [$code]);
-        } else {
-            $query->where('short_code', $code);
-        }
-
-        if ($query->exists()) {
+        if (ShortUrl::shortCodeExists($code)) {
             return false;
         }
 
