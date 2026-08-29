@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Ai\Agents\ShortCodeCreator;
 use App\Http\Requests\StoreShortUrlRequest;
+use App\Http\Requests\SuggestShortCodeRequest;
 use App\Http\Requests\UpdateShortUrlRequest;
 use App\Models\ShortUrl;
 use App\Models\ShortUrlClick;
@@ -12,12 +14,16 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Throwable;
 
 class ShortUrlController extends Controller
 {
     private const REDIRECT_CACHE_TTL_SECONDS = 300; // 5 min
+
     private const MAX_SHORT_URLS_PER_DAY = 10;
 
     public function redirect(Request $request, string $code)
@@ -39,6 +45,39 @@ class ShortUrlController extends Controller
         return redirect()->away($shortUrl['original_url'], 302);
     }
 
+    public function suggest(SuggestShortCodeRequest $request)
+    {
+        $title = trim((string) $request->input('title', ''));
+        $originalUrl = trim((string) $request->input('original_url', ''));
+
+        $prompt = collect([
+            $title !== '' ? "Title: {$title}" : null,
+            $originalUrl !== '' ? "Destination URL: {$originalUrl}" : null,
+        ])->filter()->implode("\n");
+
+        try {
+            $response = (new ShortCodeCreator)->prompt($prompt);
+        } catch (Throwable $exception) {
+            Log::warning('Short code suggestion failed.', [
+                'error' => $exception->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'Unable to suggest aliases right now. Please try again.',
+            ], 503);
+        }
+
+        $suggestions = collect($response['suggestions'] ?? [])
+            ->map(fn ($code) => trim((string) $code))
+            ->filter(fn ($code) => $this->isValidSuggestedShortCode($code))
+            ->unique()
+            ->values()
+            ->take(5)
+            ->all();
+
+        return response()->json(['suggestions' => $suggestions]);
+    }
+
     public function store(StoreShortUrlRequest $request)
     {
         $userId = auth()->id();
@@ -50,8 +89,8 @@ class ShortUrlController extends Controller
         if ($createdInLast24Hours >= self::MAX_SHORT_URLS_PER_DAY) {
             return back()
                 ->withErrors([
-                    'original_url' => 'You can only create up to ' . self::MAX_SHORT_URLS_PER_DAY
-                        . ' short URLs in a 24-hour period.',
+                    'original_url' => 'You can only create up to '.self::MAX_SHORT_URLS_PER_DAY
+                        .' short URLs in a 24-hour period.',
                 ], $request->errorBag)
                 ->withInput();
         }
@@ -137,7 +176,7 @@ class ShortUrlController extends Controller
             try {
                 ShortUrl::whereKey($shortUrlId)->increment('clicks');
                 ShortUrlClick::create($clickData);
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 Log::error('Short URL click tracking failed.', [
                     'short_url_id' => $shortUrlId,
                     'error' => $exception->getMessage(),
@@ -153,6 +192,50 @@ class ShortUrlController extends Controller
         } while (ShortUrl::where('short_code', $shortCode)->exists());
 
         return $shortCode;
+    }
+
+    private function isValidSuggestedShortCode(string $code): bool
+    {
+        if (! preg_match('/^[A-Za-z0-9_-]{3,20}$/', $code)) {
+            return false;
+        }
+
+        $query = ShortUrl::query();
+
+        if (DB::connection()->getDriverName() === 'mysql') {
+            $query->whereRaw('BINARY short_code = ?', [$code]);
+        } else {
+            $query->where('short_code', $code);
+        }
+
+        if ($query->exists()) {
+            return false;
+        }
+
+        $routeSegments = collect(Route::getRoutes())
+            ->map(fn ($route) => explode('/', ltrim($route->uri(), '/'))[0])
+            ->filter(fn ($segment) => $segment && ! str_starts_with($segment, '{'))
+            ->unique()
+            ->values()
+            ->all();
+
+        $reserved = array_unique(array_merge(
+            $routeSegments,
+            config('short_url.reserved_codes', [])
+        ));
+
+        if (in_array($code, $reserved, true)) {
+            return false;
+        }
+
+        $normalized = strtolower($code);
+        foreach (config('short_url.reserved_prefixes', []) as $prefix) {
+            if (str_starts_with($normalized, strtolower((string) $prefix))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function redirectCacheKey(string $code): string

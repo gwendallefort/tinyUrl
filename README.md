@@ -17,7 +17,7 @@
   - A local MySQL server
 
 ## Start app
-- `./vendor/bin/sail up -d.`
+- `./vendor/bin/sail up -d`
 - `./vendor/bin/sail npm run dev`
 
 ## Useful commands
@@ -53,3 +53,11 @@ This repository includes GitHub Actions workflows:
 
 - `.github/workflows/restore-last-backup.yml`
   - Manual trigger via Github UI (`workflow_dispatch`)
+
+## Ollama
+
+Short-code suggestions call Ollama via Laravel AI SDK (`config/ai.php`).
+
+- OLLAMA_URL :
+  - `https://ollama.com` for cloud model
+  - `http://localhost:11434` for local model

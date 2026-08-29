@@ -42,6 +42,98 @@ function copyToClipboard(text, btn) {
     }
 }
 
+function initSuggestShortCode() {
+    const button = document.getElementById('suggest-short-code-btn');
+    if (!button) {
+        return;
+    }
+
+    const results = document.getElementById('suggest-short-code-results');
+    const error = document.getElementById('suggest-short-code-error');
+    const label = document.getElementById('suggest-short-code-label');
+    const icon = document.getElementById('suggest-short-code-icon');
+    const spinner = document.getElementById('suggest-short-code-spinner');
+    const spinnerPath = document.getElementById('suggest-short-code-spinner-path');
+    const shortCodeInput = document.getElementById('create-short-code');
+    const titleInput = document.getElementById('create-title');
+    const urlInput = document.getElementById('create-original-url');
+
+    const setLoading = (loading) => {
+        button.disabled = loading;
+        label.textContent = loading ? 'Suggesting…' : 'Suggest';
+        icon.classList.toggle('hidden', loading);
+        spinner.classList.toggle('hidden', !loading);
+        if (spinnerPath) {
+            spinnerPath.classList.remove('anim-logo', 'anim-logo2');
+            if (loading) {
+                spinnerPath.classList.add(Math.random() < 0.5 ? 'anim-logo' : 'anim-logo2');
+            }
+        }
+    };
+
+    const showError = (message) => {
+        error.textContent = message;
+        error.hidden = false;
+        results.hidden = true;
+        results.innerHTML = '';
+    };
+
+    const renderSuggestions = (suggestions) => {
+        error.hidden = true;
+        error.textContent = '';
+        results.innerHTML = '';
+
+        if (!suggestions.length) {
+            showError('No available suggestions were returned. Try a clearer title or URL.');
+            return;
+        }
+
+        suggestions.forEach((code) => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.textContent = code;
+            chip.className = 'inline-flex items-center rounded-md border border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-700/60 px-2.5 py-1 text-xs font-mono text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer';
+            chip.addEventListener('click', () => {
+                shortCodeInput.value = code;
+                shortCodeInput.focus();
+            });
+            results.appendChild(chip);
+        });
+
+        results.hidden = false;
+    };
+
+    button.addEventListener('click', async () => {
+        const title = titleInput.value.trim();
+        const originalUrl = urlInput.value.trim();
+
+        if (!title && !originalUrl) {
+            showError('Enter a destination URL or title first.');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const { data } = await window.axios.post(button.dataset.suggestUrl, {
+                title,
+                original_url: originalUrl || null,
+            });
+
+            renderSuggestions(data.suggestions || []);
+        } catch (err) {
+            const message = err.response?.data?.message
+                || err.response?.data?.errors?.original_url?.[0]
+                || 'Unable to suggest aliases right now. Please try again.';
+            showError(message);
+        } finally {
+            setLoading(false);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initSuggestShortCode);
+
 window.openEditDialog = openEditDialog;
 window.openDeleteDialog = openDeleteDialog;
 window.openQrDialog = openQrDialog;
