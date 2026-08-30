@@ -1,3 +1,20 @@
+# Zero-downtime deploy to Hostinger (Capistrano-style releases).
+#
+# Remote layout under HOSTINGER_PATH:
+#   current/          -> symlink to the live release (web root should point at current/public)
+#   releases/<id>/    -> immutable deploy snapshots (rsync target)
+#   shared/storage/   -> persistent logs, cache, sessions, uploads (symlinked into each release)
+#
+# Flow:
+#   1. Build and test on the runner (Composer, npm, PHPUnit).
+#   2. rsync the artifact into a new releases/<timestamp>-<sha>/ directory.
+#      The live `current` tree is never modified during rsync, so traffic keeps serving the old release.
+#   3. Wire shared storage into the new release, run migrate + Laravel caches via Infisical.
+#   4. Atomically repoint `current` to the new release (symlink swap).
+#   5. Remove old release directories, keeping BACKUP_KEEP_COUNT previous ones for rollback.
+#
+# First deploy after switching to this layout: if `current` is still a real directory,
+# it is moved aside once before the symlink is created (brief gap only on that migration).
 name: Deploy to Hostinger
 
 on:
@@ -46,6 +63,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # --- Build & test on the runner (nothing touches the server yet) ---
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -92,6 +111,8 @@ jobs:
       - name: Build frontend assets
         run: npm run build
 
+      # --- Remote deploy (releases + atomic cutover) ---
+
       # Write key to a file instead of ssh-add stdin — avoids "error in libcrypto" when
       # the secret has wrong newlines, BOM, or non-PEM content (common GitHub Secrets issues).
       - name: Configure SSH key
@@ -116,25 +137,29 @@ jobs:
           fi
           printf 'HOSTINGER_PATH=%s\n' "$HOSTINGER_PATH" >> "$GITHUB_ENV"
 
-      - name: Backup last version
+      # Create a unique release folder and ensure shared storage dirs exist on the server.
+      # shared/storage survives across releases so logs, sessions, and uploads are not lost.
+      - name: Prepare release directory
         run: |
-          BACKUP_BASE="${HOSTINGER_PATH}/backups"
-          BACKUP_DIR="${BACKUP_BASE}/backup-$(TZ=Europe/Paris date +%Y%m%d-%H%M%S)"
+          RELEASE_ID="$(TZ=Europe/Paris date +%Y%m%d-%H%M%S)-${GITHUB_SHA::7}"
+          RELEASE_PATH="${HOSTINGER_PATH}/releases/${RELEASE_ID}"
+          {
+            echo "RELEASE_ID=${RELEASE_ID}"
+            echo "RELEASE_PATH=${RELEASE_PATH}"
+          } >> "$GITHUB_ENV"
           ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
             -p "$HOSTINGER_PORT" \
             "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
-            "mkdir -p \"${BACKUP_DIR}\" && rsync -a --exclude='vendor/' --exclude='node_modules/' --exclude='storage/' \"${HOSTINGER_PATH}/current/\" \"${BACKUP_DIR}/\""
+            "mkdir -p \"${RELEASE_PATH}\" \
+              \"${HOSTINGER_PATH}/shared/storage/app/public\" \
+              \"${HOSTINGER_PATH}/shared/storage/framework/cache\" \
+              \"${HOSTINGER_PATH}/shared/storage/framework/sessions\" \
+              \"${HOSTINGER_PATH}/shared/storage/framework/views\" \
+              \"${HOSTINGER_PATH}/shared/storage/logs\""
 
-      - name: Clean up old backups
-        run: |
-          BACKUP_BASE="${HOSTINGER_PATH}/backups"
-          KEEP="$((BACKUP_KEEP_COUNT + 1))"
-          ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
-            -p "$HOSTINGER_PORT" \
-            "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
-            "ls -dt \"${BACKUP_BASE}\"/backup-* 2>/dev/null | tail -n +${KEEP} | xargs -r rm -rf"
-
-      - name: Deploy to Hostinger
+      # Sync into the new release only — not into `current`.
+      # Excludes are mirrored on the server side: .env comes from Infisical; storage dirs are shared.
+      - name: Deploy release (rsync off live path)
         run: |
           rsync -avz --delete \
             -e "ssh -i $HOME/.ssh/hostinger_deploy $SSH_OPTS -p $HOSTINGER_PORT" \
@@ -150,13 +175,68 @@ jobs:
             --exclude='storage/framework/views' \
             --exclude='storage/app/public' \
             ./ \
-            $HOSTINGER_USER@$HOSTINGER_HOST:$HOSTINGER_PATH/current
+            "${HOSTINGER_USER}@${HOSTINGER_HOST}:${RELEASE_PATH}"
 
-      - name: Run Laravel optimizations with Infisical
+      # On the server: link shared storage, warm the new release, then swap `current` atomically.
+      # Migrate/cache run before cutover so a failed migration never becomes live.
+      - name: Activate release (shared storage + migrate + atomic symlink)
         run: |
           ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
             -p "$HOSTINGER_PORT" "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
-            "bash -lc 'cd \"$HOSTINGER_PATH/current\" && \
-             mkdir -p storage/framework/{cache,sessions,views} storage/logs bootstrap/cache && \
-             command -v infisical >/dev/null 2>&1 || { echo \"infisical not found in PATH: \$PATH\"; exit 127; } && \
-             infisical run --env=${INFISICAL_ENV} --path=/ -- bash -lc \"php artisan migrate --force && php artisan config:cache && php artisan view:cache\"'"
+            "bash -lc '
+              set -euo pipefail
+              HOSTINGER_PATH=\"${HOSTINGER_PATH}\"
+              RELEASE_PATH=\"${RELEASE_PATH}\"
+              SHARED_STORAGE=\"\${HOSTINGER_PATH}/shared/storage\"
+              CURRENT=\"\${HOSTINGER_PATH}/current\"
+
+              # One-time migration: copy real storage dirs from the old live tree into shared/.
+              # Skipped once storage paths are already symlinks (subsequent deploys).
+              if [ -d \"\${CURRENT}/storage\" ]; then
+                for rel in app/public framework/cache framework/sessions framework/views logs; do
+                  if [ -d \"\${CURRENT}/storage/\${rel}\" ] && [ ! -L \"\${CURRENT}/storage/\${rel}\" ]; then
+                    rsync -a \"\${CURRENT}/storage/\${rel}/\" \"\${SHARED_STORAGE}/\${rel}/\"
+                  fi
+                done
+              fi
+
+              # Point this release at shared storage (replace rsynced empty dirs with symlinks).
+              mkdir -p \"\${RELEASE_PATH}/storage/framework\" \"\${RELEASE_PATH}/storage/app\" \"\${RELEASE_PATH}/bootstrap/cache\"
+              for rel in app/public framework/cache framework/sessions framework/views logs; do
+                rm -rf \"\${RELEASE_PATH}/storage/\${rel}\"
+                ln -sfn \"\${SHARED_STORAGE}/\${rel}\" \"\${RELEASE_PATH}/storage/\${rel}\"
+              done
+
+              # Warm the release while it is still offline (.env injected by Infisical on the server).
+              command -v infisical >/dev/null 2>&1 || { echo \"infisical not found in PATH: \$PATH\"; exit 127; }
+              cd \"\${RELEASE_PATH}\"
+              infisical run --env=${INFISICAL_ENV} --path=/ -- bash -lc \
+                \"php artisan migrate --force && php artisan config:cache && php artisan view:cache\"
+
+              # Atomic cutover: traffic keeps hitting the old release until this rename completes.
+              ln -sfn \"\${RELEASE_PATH}\" \"\${HOSTINGER_PATH}/current_new\"
+              if [ -e \"\${CURRENT}\" ] && [ ! -L \"\${CURRENT}\" ]; then
+                mv \"\${CURRENT}\" \"\${HOSTINGER_PATH}/releases/pre-atomic-\$(TZ=Europe/Paris date +%Y%m%d-%H%M%S)\"
+              fi
+              mv -Tf \"\${HOSTINGER_PATH}/current_new\" \"\${CURRENT}\"
+            '"
+
+      # Keep BACKUP_KEEP_COUNT previous releases for manual rollback (ln -sfn <old> current).
+      # Never delete the release that `current` currently points at.
+      - name: Clean up old releases
+        run: |
+          KEEP="$((BACKUP_KEEP_COUNT + 1))"
+          ssh -i "$HOME/.ssh/hostinger_deploy" $SSH_OPTS \
+            -p "$HOSTINGER_PORT" \
+            "${HOSTINGER_USER}@${HOSTINGER_HOST}" \
+            "bash -lc '
+              set -euo pipefail
+              RELEASES=\"${HOSTINGER_PATH}/releases\"
+              CURRENT_TARGET=\$(readlink -f \"${HOSTINGER_PATH}/current\" || true)
+              ls -dt \"\${RELEASES}\"/*/ 2>/dev/null | while read -r dir; do
+                [ -n \"\${CURRENT_TARGET}\" ] && [ \"\$(readlink -f \"\${dir}\")\" = \"\${CURRENT_TARGET}\" ] && continue
+                echo \"\${dir}\"
+              done | tail -n +${KEEP} | xargs -r rm -rf
+              # Drop leftover full-tree backups from the previous in-place rsync deploy strategy.
+              ls -dt \"${HOSTINGER_PATH}/backups\"/backup-* 2>/dev/null | xargs -r rm -rf
+            '"
