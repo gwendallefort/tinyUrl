@@ -22,7 +22,7 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
     ->middleware('guest')
     ->name('password.email');
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->middleware('throttle:30,1')->group(function () {
     // dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/email/verify', fn () => redirect()->route('dashboard'))->name('verification.notice');
@@ -50,5 +50,6 @@ Route::middleware('auth')->group(function () {
 
 // Public short URL redirect - must be last to avoid shadowing other routes
 Route::get('/{code}', [ShortUrlController::class, 'redirect'])
+    ->middleware('throttle:30,1')
     ->name('short-url.redirect')
     ->where('code', '[A-Za-z0-9_-]+');
