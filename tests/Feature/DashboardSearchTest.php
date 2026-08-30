@@ -113,6 +113,79 @@ class DashboardSearchTest extends TestCase
             ->assertSee('/keep-me');
     }
 
+    public function test_dashboard_defaults_to_newest_urls_first(): void
+    {
+        $user = User::factory()->create();
+
+        ShortUrl::factory()->for($user)->create([
+            'short_code' => 'older',
+            'created_at' => now()->subDay(),
+        ]);
+        ShortUrl::factory()->for($user)->create([
+            'short_code' => 'newer',
+            'created_at' => now(),
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(DashboardUrls::class)
+            ->assertSeeInOrder(['/newer', '/older']);
+    }
+
+    public function test_dashboard_can_sort_by_short_code(): void
+    {
+        $user = User::factory()->create();
+
+        ShortUrl::factory()->for($user)->create([
+            'short_code' => 'zebra',
+            'created_at' => now()->subDay(),
+        ]);
+        ShortUrl::factory()->for($user)->create([
+            'short_code' => 'alpha',
+            'created_at' => now(),
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(DashboardUrls::class)
+            ->call('sortBy', 'short_code')
+            ->assertSeeInOrder(['/alpha', '/zebra'])
+            ->call('sortBy', 'short_code')
+            ->assertSeeInOrder(['/zebra', '/alpha'])
+            ->call('sortBy', 'short_code')
+            ->assertSet('sortField', 'created_at')
+            ->assertSet('sortDirection', 'desc')
+            ->assertSeeInOrder(['/alpha', '/zebra']);
+    }
+
+    public function test_dashboard_can_sort_by_clicks(): void
+    {
+        $user = User::factory()->create();
+
+        ShortUrl::factory()->for($user)->create([
+            'short_code' => 'many',
+            'clicks' => 50,
+            'created_at' => now()->subDay(),
+        ]);
+        ShortUrl::factory()->for($user)->create([
+            'short_code' => 'few',
+            'clicks' => 2,
+            'created_at' => now(),
+        ]);
+
+        $this->actingAs($user);
+
+        Livewire::test(DashboardUrls::class)
+            ->call('sortBy', 'clicks')
+            ->assertSeeInOrder(['/many', '/few'])
+            ->call('sortBy', 'clicks')
+            ->assertSeeInOrder(['/few', '/many'])
+            ->call('sortBy', 'clicks')
+            ->assertSet('sortField', 'created_at')
+            ->assertSet('sortDirection', 'desc')
+            ->assertSeeInOrder(['/few', '/many']);
+    }
+
     public function test_guests_cannot_view_dashboard(): void
     {
         $this->get('/dashboard')

@@ -69,11 +69,52 @@
                         <col class="w-[6.75rem] sm:w-32">
                     </colgroup>
                     <thead>
+                        @php
+                            $headerColumns = [
+                                ['type' => 'sort', 'field' => 'short_code', 'label' => 'URL', 'align' => 'left', 'padding' => 'px-3 sm:px-5'],
+                                ['type' => 'static', 'label' => 'Original', 'align' => 'left', 'padding' => 'px-3 sm:px-5', 'class' => 'hidden sm:table-cell'],
+                                ['type' => 'sort', 'field' => 'clicks', 'label' => 'Clicks', 'align' => 'right', 'padding' => 'px-2 sm:px-5'],
+                                ['type' => 'static', 'label' => 'Actions', 'align' => 'right', 'padding' => 'px-2 sm:px-5'],
+                            ];
+                        @endphp
                         <tr class="border-b border-zinc-200 dark:border-zinc-700 text-left">
-                            <th class="px-3 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">URL</th>
-                            <th class="px-3 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide hidden sm:table-cell">Original</th>
-                            <th class="px-2 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right whitespace-nowrap">Clicks</th>
-                            <th class="px-2 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right whitespace-nowrap">Actions</th>
+                            @foreach ($headerColumns as $column)
+                                @if ($column['type'] === 'sort')
+                                    @php
+                                        $isActive = $sortField === $column['field'];
+                                    @endphp
+                                    <th
+                                        class="{{ $column['padding'] }} py-3 text-xs font-medium uppercase tracking-wide {{ $column['align'] === 'right' ? 'text-right whitespace-nowrap' : '' }}"
+                                        aria-sort="{{ $isActive ? ($sortDirection === 'asc' ? 'ascending' : 'descending') : 'none' }}"
+                                    >
+                                        <button
+                                            type="button"
+                                            wire:click="sortBy('{{ $column['field'] }}')"
+                                            class="inline-flex items-center gap-1 transition-colors cursor-pointer {{ $isActive ? 'text-zinc-900 dark:text-zinc-100 font-semibold' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200' }}"
+                                        >
+                                            {{ $column['label'] }}
+                                            <svg
+                                                class="w-4 h-4 shrink-0 {{ $isActive ? 'text-zinc-900 dark:text-zinc-100' : 'opacity-0' }}"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                aria-hidden="true"
+                                            >
+                                                @if ($isActive && $sortDirection === 'asc')
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 12l4-4 4 4" />
+                                                @elseif ($isActive)
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 8l4 4 4-4" />
+                                                @endif
+                                            </svg>
+                                        </button>
+                                    </th>
+                                @else
+                                    <th class="{{ $column['padding'] }} py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide {{ $column['align'] === 'right' ? 'text-right whitespace-nowrap' : '' }} {{ $column['class'] ?? '' }}">
+                                        {{ $column['label'] }}
+                                    </th>
+                                @endif
+                            @endforeach
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/60">
