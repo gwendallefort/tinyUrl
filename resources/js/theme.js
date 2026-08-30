@@ -81,9 +81,9 @@ function syncThemeToggleUi() {
         const sunIcon = btn.querySelector('[data-theme-icon="light"]');
         const moonIcon = btn.querySelector('[data-theme-icon="dark"]');
         const systemIcon = btn.querySelector('[data-theme-icon="system"]');
-        if (sunIcon) sunIcon.classList.toggle('hidden', dark);
-        if (moonIcon) moonIcon.classList.toggle('hidden', !dark);
-        if (systemIcon) systemIcon.classList.add('hidden');
+        if (sunIcon) sunIcon.classList.toggle('hidden', system || dark);
+        if (moonIcon) moonIcon.classList.toggle('hidden', system || !dark);
+        if (systemIcon) systemIcon.classList.toggle('hidden', !system);
     });
 }
 

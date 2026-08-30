@@ -8,6 +8,8 @@
             @include('partials.theme-toggle')
             @include('partials.locale-toggle')
 
+            <span class="text-zinc-300 dark:text-zinc-600">|</span>
+
             @if(request()->routeIs('dashboard'))
                 <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ __('ui.nav.dashboard') }}</span>
             @else
@@ -15,8 +17,6 @@
                     {{ __('ui.nav.dashboard') }}
                 </a>
             @endif
-
-            <span class="text-zinc-300 dark:text-zinc-600">|</span>
 
             @if(request()->routeIs('profile'))
                 <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{{ __('ui.nav.profile') }}</span>

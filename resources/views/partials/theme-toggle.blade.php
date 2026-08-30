@@ -17,4 +17,9 @@
     <svg data-theme-icon="dark" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
     </svg>
+    <svg data-theme-icon="system" class="w-5 h-5 hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lg:size-3 size-3.5">
+        <path d="M4.5 15.5L9 14.5L13.5 15.5" stroke="currentColor" width="1.5" linecap="round" linejoin="round"></path>
+        <path d="M9 11.75V14.5" stroke="currentColor" width="1.5" linecap="round" linejoin="round"></path>
+        <path d="M14.25 2.75H3.75C2.64543 2.75 1.75 3.64543 1.75 4.75V9.75C1.75 10.8546 2.64543 11.75 3.75 11.75H14.25C15.3546 11.75 16.25 10.8546 16.25 9.75V4.75C16.25 3.64543 15.3546 2.75 14.25 2.75Z" stroke="currentColor" width="1.5" linecap="round" linejoin="round"></path>
+    </svg>
 </button>
