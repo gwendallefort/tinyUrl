@@ -61,33 +61,39 @@
             </div>
         @else
             <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
-                <table class="w-full text-sm">
+                <table class="w-full table-fixed text-sm">
+                    <colgroup>
+                        <col>
+                        <col class="hidden sm:table-column">
+                        <col class="w-14 sm:w-20">
+                        <col class="w-[6.75rem] sm:w-32">
+                    </colgroup>
                     <thead>
                         <tr class="border-b border-zinc-200 dark:border-zinc-700 text-left">
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">URL</th>
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide hidden sm:table-cell">Original</th>
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right">Clicks</th>
-                            <th class="px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right">Actions</th>
+                            <th class="px-3 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">URL</th>
+                            <th class="px-3 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide hidden sm:table-cell">Original</th>
+                            <th class="px-2 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right whitespace-nowrap">Clicks</th>
+                            <th class="px-2 sm:px-5 py-3 text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide text-right whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-700/60">
                         @foreach ($shortUrls as $url)
                             <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-700/30 transition-colors group" wire:key="url-{{ $url->uuid }}">
                                 {{-- Short URL cell --}}
-                                <td class="px-5 py-4">
+                                <td class="px-3 sm:px-5 py-3 sm:py-4 min-w-0">
                                     @if ($url->title)
-                                        <p class="font-medium text-zinc-900 dark:text-zinc-100 truncate max-w-[180px]" title="{{ $url->title }}">{{ $url->title }}</p>
+                                        <p class="font-medium text-zinc-900 dark:text-zinc-100 truncate" title="{{ $url->title }}">{{ $url->title }}</p>
                                     @endif
-                                    <div class="flex items-center gap-1.5 mt-0.5">
+                                    <div class="flex items-center gap-1 mt-0.5 min-w-0">
                                         <a
                                             href="{{ $url->shortLink(1) }}"
                                             target="_blank"
-                                            class="font-mono text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                                            class="font-mono text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors truncate min-w-0"
                                         >/{{ $url->short_code }}</a>
                                         <button
                                             type="button"
                                             onclick="copyToClipboard('{{ $url->shortLink() }}', this)"
-                                            class="transition-opacity p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+                                            class="shrink-0 transition-opacity p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
                                             title="Copy short URL"
                                         >
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,25 +103,25 @@
                                     </div>
                                 </td>
                                 {{-- Original URL cell --}}
-                                <td class="px-5 py-4 hidden sm:table-cell">
+                                <td class="px-3 sm:px-5 py-3 sm:py-4 hidden sm:table-cell min-w-0">
                                     <a
                                         href="{{ $url->original_url }}"
                                         target="_blank"
-                                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors truncate block max-w-xs"
+                                        class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors truncate block"
                                         title="{{ $url->original_url }}"
                                     >{{ $url->original_url }}</a>
                                 </td>
                                 {{-- Clicks --}}
-                                <td class="px-5 py-4 text-right tabular-nums text-zinc-700 dark:text-zinc-300 font-medium">
+                                <td class="px-2 sm:px-5 py-3 sm:py-4 text-right tabular-nums text-zinc-700 dark:text-zinc-300 font-medium whitespace-nowrap">
                                     {{ number_format($url->clicks) }}
                                 </td>
                                 {{-- Actions --}}
-                                <td class="px-5 py-4">
-                                    <div class="flex items-center justify-end gap-2">
+                                <td class="px-2 sm:px-5 py-3 sm:py-4 whitespace-nowrap">
+                                    <div class="flex items-center justify-end gap-0.5 sm:gap-2">
                                         <button
                                             type="button"
                                             onclick="openEditDialog('{{ $url->uuid }}', {{ json_encode($url->title ?? '') }}, {{ json_encode($url->original_url) }}, {{ json_encode($url->short_code) }})"
-                                            class="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                                            class="p-1 sm:p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                                             title="Edit"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,7 +131,7 @@
                                         <button
                                             type="button"
                                             onclick="openQrDialog({{ json_encode(route('short-urls.qr', $url)) }}, {{ json_encode('/'.$url->short_code) }})"
-                                            class="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                                            class="p-1 sm:p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                                             title="QR code"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -135,7 +141,7 @@
                                         <button
                                             type="button"
                                             onclick="openDeleteDialog('{{ $url->uuid }}', {{ json_encode($url->title ?: $url->short_code) }})"
-                                            class="p-1.5 rounded-md text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                                            class="p-1 sm:p-1.5 rounded-md text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
                                             title="Delete"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
