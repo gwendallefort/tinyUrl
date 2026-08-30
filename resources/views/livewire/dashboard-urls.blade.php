@@ -1,7 +1,7 @@
 <div>
     {{-- Search --}}
     <div class="mb-6">
-        <label for="dashboard-search" class="sr-only">Search short URLs</label>
+        <label for="dashboard-search" class="sr-only">{{ __('dashboard.search.label') }}</label>
         <div class="flex gap-2">
             <div class="relative flex-1">
                 <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -11,7 +11,7 @@
                     id="dashboard-search"
                     wire:model.live.debounce.300ms="search"
                     type="search"
-                    placeholder="Search..."
+                    placeholder="{{ __('dashboard.search.placeholder') }}"
                     autocomplete="off"
                     class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 pl-9 pr-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition"
                 >
@@ -22,7 +22,7 @@
                     wire:click="clear"
                     class="inline-flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                 >
-                    Clear
+                    {{ __('dashboard.search.clear') }}
                 </button>
             @endif
         </div>
@@ -38,24 +38,24 @@
                     </svg>
                 </div>
                 @if ($search !== '')
-                    <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">No matching short URLs</h2>
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-5">Nothing matched “{{ $search }}” in short codes or original URLs.</p>
+                    <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">{{ __('dashboard.empty.search_title') }}</h2>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-5">{{ __('dashboard.empty.search_body', ['search' => $search]) }}</p>
                     <button
                         type="button"
                         wire:click="clear"
                         class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors cursor-pointer"
                     >
-                        Clear search
+                        {{ __('dashboard.empty.clear_search') }}
                     </button>
                 @else
-                    <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">No short URLs yet</h2>
-                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-5">Your shortened URLs will appear here once you create them.</p>
+                    <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">{{ __('dashboard.empty.title') }}</h2>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-5">{{ __('dashboard.empty.body') }}</p>
                     <button
                         type="button"
                         onclick="document.getElementById('create-modal').showModal()"
                         class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors cursor-pointer"
                     >
-                        Create your first short URL
+                        {{ __('dashboard.empty.cta') }}
                     </button>
                 @endif
             </div>
@@ -71,10 +71,10 @@
                     <thead>
                         @php
                             $headerColumns = [
-                                ['type' => 'sort', 'field' => 'short_code', 'label' => 'URL', 'align' => 'left', 'padding' => 'px-3 sm:px-5'],
-                                ['type' => 'static', 'label' => 'Original', 'align' => 'left', 'padding' => 'px-3 sm:px-5', 'class' => 'hidden sm:table-cell'],
-                                ['type' => 'sort', 'field' => 'clicks', 'label' => 'Clicks', 'align' => 'right', 'padding' => 'px-2 sm:px-5'],
-                                ['type' => 'static', 'label' => 'Actions', 'align' => 'right', 'padding' => 'px-2 sm:px-5'],
+                                ['type' => 'sort', 'field' => 'short_code', 'label' => __('dashboard.table.url'), 'align' => 'left', 'padding' => 'px-3 sm:px-5'],
+                                ['type' => 'static', 'label' => __('dashboard.table.original'), 'align' => 'left', 'padding' => 'px-3 sm:px-5', 'class' => 'hidden sm:table-cell'],
+                                ['type' => 'sort', 'field' => 'clicks', 'label' => __('dashboard.table.clicks'), 'align' => 'right', 'padding' => 'px-2 sm:px-5'],
+                                ['type' => 'static', 'label' => __('dashboard.table.actions'), 'align' => 'right', 'padding' => 'px-2 sm:px-5'],
                             ];
                         @endphp
                         <tr class="border-b border-zinc-200 dark:border-zinc-700 text-left">
@@ -135,7 +135,7 @@
                                             type="button"
                                             onclick="copyToClipboard('{{ $url->shortLink() }}', this)"
                                             class="shrink-0 transition-opacity p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
-                                            title="Copy short URL"
+                                            title="{{ __('dashboard.actions.copy_title') }}"
                                         >
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -163,7 +163,7 @@
                                             type="button"
                                             onclick="openEditDialog('{{ $url->uuid }}', {{ json_encode($url->title ?? '') }}, {{ json_encode($url->original_url) }}, {{ json_encode($url->short_code) }})"
                                             class="p-1 sm:p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                                            title="Edit"
+                                            title="{{ __('dashboard.actions.edit') }}"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -173,7 +173,7 @@
                                             type="button"
                                             onclick="openQrDialog({{ json_encode(route('short-urls.qr', $url)) }}, {{ json_encode('/'.$url->short_code) }})"
                                             class="p-1 sm:p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                                            title="QR code"
+                                            title="{{ __('dashboard.actions.qr') }}"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
@@ -183,7 +183,7 @@
                                             type="button"
                                             onclick="openDeleteDialog('{{ $url->uuid }}', {{ json_encode($url->title ?: $url->short_code) }})"
                                             class="p-1 sm:p-1.5 rounded-md text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-                                            title="Delete"
+                                            title="{{ __('dashboard.actions.delete') }}"
                                         >
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

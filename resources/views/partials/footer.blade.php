@@ -7,7 +7,7 @@
             </a>
         </div>
             <a href="mailto:contact@lig.re" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 underline-offset-2 hover:underline">contact@lig.re</a>
-            <span>&copy; {{ date('Y') }} {{ config('app.name') }}</span>
+            <span>{{ __('ui.footer.copyright', ['year' => date('Y'), 'app' => config('app.name')]) }}</span>
 
     </div>
 </footer>

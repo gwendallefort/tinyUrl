@@ -3,8 +3,17 @@ const THEME_STORAGE_KEY = 'storage-theme';
 function showThemeTooltip(btn, themeName) {
     if (!btn) return;
 
+    const fallbackLabels = {
+        light: 'Switched to light theme',
+        dark: 'Switched to dark theme',
+        system: 'Switched to system theme',
+    };
+    const label = btn.dataset[`labelSwitched${themeName.charAt(0).toUpperCase()}${themeName.slice(1)}`]
+        || fallbackLabels[themeName]
+        || `Switched to ${themeName} theme`;
+
     const tooltip = document.createElement('span');
-    tooltip.textContent = `Switched to ${themeName} theme`;
+    tooltip.textContent = label;
     tooltip.className = 'pointer-events-none absolute z-50 rounded bg-gray-900 px-2 py-1 text-xs text-white shadow dark:bg-gray-100 dark:text-gray-900';
     tooltip.setAttribute('role', 'status');
     tooltip.setAttribute('aria-live', 'polite');
@@ -63,10 +72,10 @@ function syncThemeToggleUi() {
         btn.setAttribute(
             'title',
             system
-                ? 'Current theme: system'
+                ? (btn.dataset.labelCurrentSystem || 'Current theme: system')
                 : dark
-                  ? 'Current theme: dark'
-                  : 'Current theme: light',
+                  ? (btn.dataset.labelCurrentDark || 'Current theme: dark')
+                  : (btn.dataset.labelCurrentLight || 'Current theme: light'),
         );
 
         const sunIcon = btn.querySelector('[data-theme-icon="light"]');

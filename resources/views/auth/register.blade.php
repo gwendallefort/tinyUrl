@@ -1,8 +1,8 @@
 <x-layouts.auth>
-    <x-slot name="title">{{ config('app.name') }} - Create account</x-slot>
+    <x-slot name="title">{{ __('seo.titles.register', ['app' => config('app.name')]) }}</x-slot>
 
-    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Create an account</h1>
-    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Start shortening your URLs today</p>
+    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{{ __('auth.register.title') }}</h1>
+    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">{{ __('auth.register.subtitle') }}</p>
 
     <form
         method="POST"
@@ -16,7 +16,7 @@
         {{-- Email --}}
         <div>
             <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Email address
+                {{ __('auth.fields.email') }}
             </label>
             <input
                 id="email"
@@ -26,7 +26,7 @@
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="you@example.com"
+                placeholder="{{ __('auth.fields.email_placeholder') }}"
                 class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg outline-none transition-colors
                     {{ $errors->has('email') ? 'border-red-400 dark:border-red-600' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
                     text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
@@ -39,13 +39,13 @@
         {{-- Password --}}
         <div>
             <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Password
+                {{ __('auth.fields.password') }}
             </label>
             <x-password-input
                 id="password"
                 name="password"
                 autocomplete="new-password"
-                placeholder="At least 8 characters"
+                placeholder="{{ __('auth.fields.password_placeholder') }}"
                 :hasError="$errors->has('password')"
                 inputClass="px-3.5 py-2.5"
             />
@@ -57,7 +57,7 @@
         {{-- Confirm Password --}}
         <div>
             <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Confirm password
+                {{ __('auth.fields.password_confirmation') }}
             </label>
             <x-password-input
                 id="password_confirmation"
@@ -74,16 +74,16 @@
         {{-- Submit --}}
         <x-loading-submit-button
             buttonId="register-submit"
-            label="Create account"
-            loadingLabel="Creating the account..."
+            :label="__('auth.register.submit')"
+            :loadingLabel="__('auth.register.submitting')"
             class="w-full py-2.5 dark:hover:bg-white"
         />
     </form>
 
     <p class="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-        Already have an account?
+        {{ __('auth.register.have_account') }}
         <a href="{{ route('login') }}" class="font-medium text-zinc-900 dark:text-zinc-100 hover:underline underline-offset-4 transition-colors">
-            Log in
+            {{ __('auth.register.login_link') }}
         </a>
     </p>
 </x-layouts.auth>

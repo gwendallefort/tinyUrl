@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.theme-init')
     @include('partials.seo', [
-        'title' => config('app.name') . ' - Profile',
-        'description' => config('seo.default_description'),
+        'title' => __('seo.titles.profile', ['app' => config('app.name')]),
+        'description' => __('seo.default_description'),
         'noindex' => true,
     ])
 
@@ -26,43 +26,43 @@
     <main class="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-12 space-y-6">
 
         <div class="mb-8">
-            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Profile</h1>
-            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Manage your account settings.</p>
+            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{{ __('profile.title') }}</h1>
+            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{{ __('profile.subtitle') }}</p>
         </div>
 
         {{-- Log out --}}
         <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-            <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Log out</h2>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">End your session on this device.</p>
+            <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">{{ __('profile.logout.title') }}</h2>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">{{ __('profile.logout.body') }}</p>
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="inline-flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors cursor-pointer">
-                    Log out
+                    {{ __('profile.logout.button') }}
                 </button>
             </form>
         </div>
 
         {{-- Profile information --}}
         <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-            <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Profile information</h2>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Update your email address.</p>
+            <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">{{ __('profile.info.title') }}</h2>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">{{ __('profile.info.subtitle') }}</p>
 
             @if (session('status') === 'profile-updated')
                 <div class="mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-                    Profile updated successfully.
+                    {{ __('profile.flash.updated') }}
                 </div>
             @endif
 
             @if (session('status') === 'email-change-pending')
                 <div class="mb-4 rounded-lg bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800 px-4 py-3 text-sm text-sky-800 dark:text-sky-200">
-                    We sent a verification link to <strong class="font-medium">{{ auth()->user()->pending_email }}</strong>. Your sign-in email stays the same until you confirm.
+                    {!! __('profile.flash.email_change_pending', ['email' => auth()->user()->pending_email]) !!}
                 </div>
             @endif
 
             @if (auth()->user()->pending_email && session('status') !== 'email-change-pending')
                 <div class="mb-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
-                    Pending change: confirm <strong class="font-medium">{{ auth()->user()->pending_email }}</strong> via the email we sent.
+                    {!! __('profile.flash.email_change_pending_reminder', ['email' => auth()->user()->pending_email]) !!}
                 </div>
             @endif
 
@@ -79,7 +79,7 @@
 
                 {{-- Email --}}
                 <div>
-                    <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Email address</label>
+                    <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">{{ __('auth.fields.email') }}</label>
                     <input
                         id="email"
                         name="email"
@@ -97,8 +97,8 @@
                 <div class="pt-1">
                     <x-loading-submit-button
                         buttonId="profile-information-submit"
-                        label="Save changes"
-                        loadingLabel="Saving..."
+                        :label="__('profile.info.save')"
+                        :loadingLabel="__('profile.info.saving')"
                     />
                 </div>
             </form>
@@ -106,12 +106,12 @@
 
         {{-- Update password --}}
         <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-6">
-            <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">Update password</h2>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Use a strong, unique password to keep your account secure.</p>
+            <h2 class="text-base font-medium text-zinc-900 dark:text-zinc-100 mb-1">{{ __('profile.password.title') }}</h2>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">{{ __('profile.password.subtitle') }}</p>
 
             @if (session('status') === 'password-updated')
                 <div class="mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-                    Password updated successfully.
+                    {{ __('profile.flash.password_updated') }}
                 </div>
             @endif
 
@@ -127,7 +127,7 @@
 
                 {{-- Current password --}}
                 <div>
-                    <label for="current_password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Current password</label>
+                    <label for="current_password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">{{ __('profile.password.current') }}</label>
                     <x-password-input
                         id="current_password"
                         name="current_password"
@@ -144,7 +144,7 @@
 
                 {{-- New password --}}
                 <div>
-                    <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">New password</label>
+                    <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">{{ __('profile.password.new') }}</label>
                     <x-password-input
                         id="password"
                         name="password"
@@ -161,7 +161,7 @@
 
                 {{-- Confirm new password --}}
                 <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Confirm new password</label>
+                    <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">{{ __('profile.password.confirm') }}</label>
                     <x-password-input
                         id="password_confirmation"
                         name="password_confirmation"
@@ -174,8 +174,8 @@
                 {{-- Submit --}}
                 <x-loading-submit-button
                     buttonId="update-password-submit"
-                    label="Update password"
-                    loadingLabel="Updating..."
+                    :label="__('profile.password.submit')"
+                    :loadingLabel="__('profile.password.submitting')"
                     class="py-2.5 dark:hover:bg-white"
                 />
             </form>
@@ -183,8 +183,8 @@
 
         {{-- Delete account --}}
         <div class="bg-white dark:bg-zinc-800 rounded-xl border border-red-200 dark:border-red-900 p-6">
-            <h2 class="text-base font-medium text-red-600 dark:text-red-400 mb-1">Delete account</h2>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Permanently delete your account and all associated data. This action cannot be undone.</p>
+            <h2 class="text-base font-medium text-red-600 dark:text-red-400 mb-1">{{ __('profile.delete.title') }}</h2>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">{{ __('profile.delete.body') }}</p>
 
             @if ($errors->deleteAccount->any())
                 <div class="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-400">
@@ -197,7 +197,7 @@
                 onclick="document.getElementById('delete-modal').showModal()"
                 class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 transition-colors cursor-pointer"
             >
-                Delete my account
+                {{ __('profile.delete.button') }}
             </button>
 
             {{-- Confirmation dialog --}}
@@ -205,9 +205,9 @@
                 id="delete-modal"
                 class="m-auto w-full max-w-md rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-xl p-6 backdrop:bg-black/50 open:flex open:flex-col"
             >
-                <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-2">Are you sure?</h3>
+                <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-2">{{ __('profile.delete.confirm_title') }}</h3>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-5">
-                    Enter your password to confirm. This will permanently delete your account and all your data.
+                    {{ __('profile.delete.confirm_body') }}
                 </p>
 
                 <form method="POST" action="{{ route('profile.destroy') }}" class="space-y-4">
@@ -215,7 +215,7 @@
                     @method('DELETE')
 
                     <div>
-                        <label for="delete_password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Password</label>
+                        <label for="delete_password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">{{ __('auth.fields.password') }}</label>
                         <x-password-input
                             id="delete_password"
                             name="password"
@@ -230,14 +230,14 @@
                             type="submit"
                             class="inline-flex items-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 transition-colors cursor-pointer"
                         >
-                            Yes, delete my account
+                            {{ __('profile.delete.confirm_submit') }}
                         </button>
                         <button
                             type="button"
                             onclick="document.getElementById('delete-modal').close()"
                             class="inline-flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 transition-colors cursor-pointer"
                         >
-                            Cancel
+                            {{ __('ui.actions.cancel') }}
                         </button>
                     </div>
                 </form>

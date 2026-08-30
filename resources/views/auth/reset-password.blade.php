@@ -1,8 +1,8 @@
 <x-layouts.auth>
-    <x-slot name="title">{{ config('app.name') }} - Set new password</x-slot>
+    <x-slot name="title">{{ __('seo.titles.reset_password', ['app' => config('app.name')]) }}</x-slot>
 
-    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Set new password</h1>
-    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Choose a strong password for your account.</p>
+    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{{ __('auth.reset.title') }}</h1>
+    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">{{ __('auth.reset.subtitle') }}</p>
 
     <form
         method="POST"
@@ -18,7 +18,7 @@
         {{-- Email --}}
         <div>
             <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Email address
+                {{ __('auth.fields.email') }}
             </label>
             <input
                 readonly
@@ -29,7 +29,7 @@
                 value="{{ old('email', $request->email) }}"
                 required
                 autocomplete="username"
-                placeholder="you@example.com"
+                placeholder="{{ __('auth.fields.email_placeholder') }}"
                 class="w-full px-3.5 py-2.5 text-sm border rounded-lg outline-none transition-colors
                     {{ $errors->has('email') ? 'border-red-400 dark:border-red-600' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
                     placeholder-zinc-400 dark:placeholder-zinc-500"
@@ -42,13 +42,13 @@
         {{-- New Password --}}
         <div>
             <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                New password
+                {{ __('auth.fields.new_password') }}
             </label>
             <x-password-input
                 id="password"
                 name="password"
                 autocomplete="new-password"
-                placeholder="At least 8 characters"
+                placeholder="{{ __('auth.fields.password_placeholder') }}"
                 autofocus
                 :hasError="$errors->has('password')"
                 inputClass="px-3.5 py-2.5"
@@ -61,7 +61,7 @@
         {{-- Confirm Password --}}
         <div>
             <label for="password_confirmation" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Confirm new password
+                {{ __('auth.fields.confirm_new_password') }}
             </label>
             <x-password-input
                 id="password_confirmation"
@@ -78,7 +78,7 @@
         {{-- Submit --}}
         <x-loading-submit-button
             buttonId="reset-password-submit"
-            label="Reset password"
+            :label="__('auth.reset.submit')"
             class="w-full py-2.5 dark:hover:bg-white"
         />
     </form>

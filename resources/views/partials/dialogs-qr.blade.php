@@ -4,12 +4,12 @@
     onclick="if (event.target === this) this.close()"
 >
     <div class="contents" onclick="event.stopPropagation()">
-    <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-1">QR code</h3>
+    <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{{ __('dashboard.qr.title') }}</h3>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-        Scan to open <span id="qr-modal-label" class="font-mono text-zinc-700 dark:text-zinc-300"></span>
+        {{ __('dashboard.qr.scan') }} <span id="qr-modal-label" class="font-mono text-zinc-700 dark:text-zinc-300"></span>
     </p>
     <div class="flex justify-center rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white p-3 mb-4">
-        <img id="qr-modal-image" src="" alt="QR code for short URL" width="280" height="280" class="max-w-full h-auto" />
+        <img id="qr-modal-image" src="" alt="{{ __('dashboard.qr.alt') }}" width="280" height="280" class="max-w-full h-auto" />
     </div>
     <div class="flex flex-wrap items-center gap-3">
         <a
@@ -18,14 +18,14 @@
             download
             class="inline-flex items-center rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors"
         >
-            Download PNG
+            {{ __('dashboard.qr.download') }}
         </a>
         <button
             type="button"
             onclick="document.getElementById('qr-modal').close()"
             class="inline-flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
         >
-            Close
+            {{ __('ui.actions.close') }}
         </button>
     </div>
     </div>

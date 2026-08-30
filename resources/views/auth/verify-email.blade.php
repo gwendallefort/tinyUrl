@@ -7,8 +7,8 @@
     @include('partials.theme-init')
 
     @include('partials.seo', [
-        'title' => config('app.name') . ' - Verify email',
-        'description' => config('seo.auth_description'),
+        'title' => __('seo.titles.verify_email', ['app' => config('app.name')]),
+        'description' => __('seo.auth_description'),
         'noindex' => true,
     ])
 
@@ -22,8 +22,9 @@
 </head>
 <body class="relative bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
-    <div class="fixed top-4 right-4 z-20">
+    <div class="fixed top-4 right-4 z-20 flex items-center gap-2">
         @include('partials.theme-toggle')
+        @include('partials.locale-toggle')
     </div>
 
     <dialog
@@ -33,14 +34,14 @@
         <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
                 @include('components/logo')
-                <h1 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">Verify your email</h1>
+                <h1 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{{ __('auth.verify.title') }}</h1>
             </div>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button
                     type="submit"
                     class="p-1 rounded-md text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
-                    title="Log out"
+                    title="{{ __('auth.verify.logout') }}"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -50,12 +51,12 @@
         </div>
 
         <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-            We sent a verification link to your email address. Click it to activate your account.
+            {{ __('auth.verify.body') }}
         </p>
 
         @if (session('status') === 'verification-link-sent')
             <div class="mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-                A fresh verification link has been sent.
+                {{ __('auth.verify.link_sent') }}
             </div>
         @endif
 
@@ -65,14 +66,14 @@
                 type="submit"
                 class="inline-flex items-center rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors cursor-pointer"
             >
-                Resend verification email
+                {{ __('auth.verify.resend') }}
             </button>
 
             <a
                 href="{{ route('home') }}"
                 class="inline-flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
             >
-                Back to home
+                {{ __('auth.verify.back_home') }}
             </a>
         </form>
     </dialog>

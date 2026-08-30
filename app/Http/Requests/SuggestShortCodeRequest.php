@@ -28,7 +28,7 @@ class SuggestShortCodeRequest extends FormRequest
             if (! filled($this->input('title')) && ! filled($this->input('original_url'))) {
                 $validator->errors()->add(
                     'original_url',
-                    'Provide a destination URL or title so we can suggest aliases.'
+                    __('validation_short_url.suggest.missing_context')
                 );
             }
         });

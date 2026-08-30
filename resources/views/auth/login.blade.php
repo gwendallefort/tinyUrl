@@ -1,12 +1,12 @@
 <x-layouts.auth>
-    <x-slot name="title">{{ config('app.name') }} - Log in</x-slot>
+    <x-slot name="title">{{ __('seo.titles.login', ['app' => config('app.name')]) }}</x-slot>
 
-    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Welcome back</h1>
-    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">Log in to your account to continue</p>
+    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{{ __('auth.login.title') }}</h1>
+    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">{{ __('auth.login.subtitle') }}</p>
 
     @if (is_string(session('url.intended')) && str_contains(session('url.intended'), '/email/verify/'))
         <div class="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg text-sm text-amber-900 dark:text-amber-200">
-            You opened a link to verify a <strong>new</strong> email address. Sign in with the email address <strong>already on your account</strong> (not the new one).
+            {!! __('auth.login.verify_new_email_hint') !!}
         </div>
     @endif
 
@@ -30,7 +30,7 @@
         {{-- Email --}}
         <div>
             <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Email address
+                {{ __('auth.fields.email') }}
             </label>
             <input
                 id="email"
@@ -40,7 +40,7 @@
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="you@example.com"
+                placeholder="{{ __('auth.fields.email_placeholder') }}"
                 class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg transition-colors
                     {{ $errors->has('email') ? 'border-red-400 dark:border-red-600 focus:border-red-400 dark:focus:border-red-500' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
                     text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
@@ -54,11 +54,11 @@
         <div>
             <div class="flex items-center justify-between mb-1.5">
                 <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                    Password
+                    {{ __('auth.fields.password') }}
                 </label>
                 @if (Route::has('password.request'))
                     <a href="{{ route('password.request') }}" class="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">
-                        Forgot password?
+                        {{ __('auth.login.forgot') }}
                     </a>
                 @endif
             </div>
@@ -88,24 +88,24 @@
                     dark:checked:border-zinc-100 dark:checked:bg-zinc-900"
             >
             <span class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug transition-colors group-hover:text-zinc-800 dark:group-hover:text-zinc-200">
-                Remember me
+                {{ __('auth.login.remember') }}
             </span>
         </label>
 
         {{-- Submit --}}
         <x-loading-submit-button
             buttonId="login-submit"
-            label="Log in"
-            loadingLabel="Logging in..."
+            :label="__('auth.login.submit')"
+            :loadingLabel="__('auth.login.submitting')"
             class="w-full py-2.5 dark:hover:bg-white"
         />
     </form>
 
     @if (Route::has('register'))
         <p class="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-            Don't have an account?
+            {{ __('auth.login.no_account') }}
             <a href="{{ route('register') }}" class="font-medium text-zinc-900 dark:text-zinc-100 hover:underline underline-offset-4 transition-colors">
-                Create one
+                {{ __('auth.login.create_one') }}
             </a>
         </p>
     @endif

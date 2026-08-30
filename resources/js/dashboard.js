@@ -48,6 +48,14 @@ function initSuggestShortCode() {
         return;
     }
 
+    const i18n = (window.__dashboardI18n && window.__dashboardI18n.suggest) || {
+        label: 'Suggest',
+        loading: 'Suggesting…',
+        missingContext: 'Enter a destination URL or title first.',
+        empty: 'No available suggestions were returned. Try a clearer title or URL.',
+        unavailable: 'Unable to suggest aliases right now. Please try again.',
+    };
+
     const results = document.getElementById('suggest-short-code-results');
     const error = document.getElementById('suggest-short-code-error');
     const label = document.getElementById('suggest-short-code-label');
@@ -60,7 +68,7 @@ function initSuggestShortCode() {
 
     const setLoading = (loading) => {
         button.disabled = loading;
-        label.textContent = loading ? 'Suggesting…' : 'Suggest';
+        label.textContent = loading ? i18n.loading : i18n.label;
         icon.classList.toggle('hidden', loading);
         spinner.classList.toggle('hidden', !loading);
         if (spinnerPath) {
@@ -84,7 +92,7 @@ function initSuggestShortCode() {
         results.innerHTML = '';
 
         if (!suggestions.length) {
-            showError('No available suggestions were returned. Try a clearer title or URL.');
+            showError(i18n.empty);
             return;
         }
 
@@ -108,7 +116,7 @@ function initSuggestShortCode() {
         const originalUrl = urlInput.value.trim();
 
         if (!title && !originalUrl) {
-            showError('Enter a destination URL or title first.');
+            showError(i18n.missingContext);
             return;
         }
 
@@ -124,7 +132,7 @@ function initSuggestShortCode() {
         } catch (err) {
             const message = err.response?.data?.message
                 || err.response?.data?.errors?.original_url?.[0]
-                || 'Unable to suggest aliases right now. Please try again.';
+                || i18n.unavailable;
             showError(message);
         } finally {
             setLoading(false);

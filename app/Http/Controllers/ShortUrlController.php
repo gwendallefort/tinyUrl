@@ -62,7 +62,7 @@ class ShortUrlController extends Controller
             ]);
 
             return response()->json([
-                'message' => 'Unable to suggest aliases right now. Please try again.',
+                'message' => __('validation_short_url.suggest.unavailable'),
             ], 503);
         }
 
@@ -88,8 +88,7 @@ class ShortUrlController extends Controller
         if ($createdInLast24Hours >= self::MAX_SHORT_URLS_PER_DAY) {
             return back()
                 ->withErrors([
-                    'original_url' => 'You can only create up to '.self::MAX_SHORT_URLS_PER_DAY
-                        .' short URLs in a 24-hour period.',
+                    'original_url' => __('validation_short_url.rate_limit', ['max' => self::MAX_SHORT_URLS_PER_DAY]),
                 ], $request->errorBag)
                 ->withInput();
         }

@@ -23,7 +23,7 @@
         type="button"
         onclick="togglePassword('{{ $id }}', this)"
         tabindex="-1"
-        aria-label="Toggle password visibility"
+        aria-label="{{ __('ui.password.toggle_visibility') }}"
         class="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition-colors"
     >
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>

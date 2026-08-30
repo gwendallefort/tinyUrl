@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ config('app.name') }} - Reset Password</title>
+    <title>{!! __('emails.reset.html_title', ['app' => config('app.name')]) !!}</title>
     <!--[if mso]>
     <noscript>
         <xml>
@@ -34,10 +34,9 @@
                                 <tr>
                                     <td style="padding-bottom:28px;">
                                         <p style="margin:0;font-size:15px;line-height:1.6;color:#52525b;">
-                                            Hello,
+                                            {!! __('emails.common.hello') !!}
                                             <br><br>
-                                            We received a request to reset the password for your <strong>{{ config('app.name') }}</strong> account.
-                                            Click the button below to choose a new password.
+                                            {!! __('emails.reset.intro', ['app' => config('app.name')]) !!}
                                         </p>
                                     </td>
                                 </tr>
@@ -48,13 +47,13 @@
                                         <!--[if mso]>
                                         <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ $url }}" style="height:44px;v-text-anchor:middle;width:200px;" arcsize="20%" stroke="f" fillcolor="#18181b">
                                             <w:anchorlock/>
-                                            <center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:600;">Reset password</center>
+                                            <center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:600;">{!! __('emails.reset.cta') !!}</center>
                                         </v:roundrect>
                                         <![endif]-->
                                         <!--[if !mso]><!-->
                                         <a href="{{ $url }}"
                                            style="display:inline-block;padding:12px 28px;background-color:#18181b;color:#ffffff;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:0.1px;line-height:1;">
-                                            Reset password
+                                            {!! __('emails.reset.cta') !!}
                                         </a>
                                         <!--<![endif]-->
                                     </td>
@@ -63,9 +62,9 @@
                                 <tr>
                                     <td style="padding-bottom:28px;">
                                         <p style="margin:0;font-size:15px;line-height:1.6;color:#52525b;">
-                                            This link will expire in {{ $expiresMinutes }} minutes.
+                                            {!! __('emails.common.expires', ['minutes' => $expiresMinutes]) !!}
                                             <br><br>
-                                            If you did not request a password reset, you can safely ignore this email - your password will not change.
+                                            {!! __('emails.reset.ignore') !!}
                                         </p>
                                     </td>
                                 </tr>
@@ -79,7 +78,7 @@
                                 <tr>
                                     <td>
                                         <p style="margin:0;font-size:12px;line-height:1.6;color:#a1a1aa;">
-                                            If the button above doesn't work, paste this URL into your browser:<br>
+                                            {!! __('emails.common.fallback') !!}<br>
                                             <a href="{{ $url }}" style="color:#52525b;word-break:break-all;">{{ $url }}</a>
                                         </p>
                                     </td>
@@ -93,7 +92,7 @@
                     <tr>
                         <td align="center" style="padding-top:24px;">
                             <p style="margin:0;font-size:12px;color:#a1a1aa;">
-                                &copy; {{ date('Y') }} {{ config('app.name') }} &mdash; You're receiving this email because a password reset was requested for your account.
+                                {!! __('emails.reset.footer', ['year' => date('Y'), 'app' => config('app.name')]) !!}
                             </p>
                         </td>
                     </tr>

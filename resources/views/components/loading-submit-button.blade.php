@@ -1,8 +1,13 @@
 @props([
     'buttonId',
-    'label' => 'Submit',
-    'loadingLabel' => 'Sending...',
+    'label' => null,
+    'loadingLabel' => null,
 ])
+
+@php
+    $label ??= __('ui.actions.submit');
+    $loadingLabel ??= __('ui.actions.sending');
+@endphp
 
 <button
     type="submit"

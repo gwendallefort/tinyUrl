@@ -1,9 +1,9 @@
 <x-layouts.auth>
-    <x-slot name="title">{{ config('app.name') }} - Reset password</x-slot>
+    <x-slot name="title">{{ __('seo.titles.forgot_password', ['app' => config('app.name')]) }}</x-slot>
 
-    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Forgot your password?</h1>
+    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 mb-1">{{ __('auth.forgot.title') }}</h1>
     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
-        No problem. Enter your email and we'll send you a reset link.
+        {{ __('auth.forgot.subtitle') }}
     </p>
 
     @if (session('status'))
@@ -25,7 +25,7 @@
         {{-- Email --}}
         <div>
             <label for="email" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Email address
+                {{ __('auth.fields.email') }}
             </label>
             <input
                 id="email"
@@ -35,7 +35,7 @@
                 required
                 autofocus
                 autocomplete="username"
-                placeholder="you@example.com"
+                placeholder="{{ __('auth.fields.email_placeholder') }}"
                 class="w-full px-3.5 py-2.5 text-sm bg-white dark:bg-zinc-900 border rounded-lg outline-none transition-colors
                     {{ $errors->has('email') ? 'border-red-400 dark:border-red-600' : 'border-zinc-300 dark:border-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-400' }}
                     text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500"
@@ -47,16 +47,16 @@
 
         <x-loading-submit-button
             buttonId="forgot-password-submit"
-            label="Send reset link"
-            loadingLabel="Sending..."
+            :label="__('auth.forgot.submit')"
+            :loadingLabel="__('auth.forgot.submitting')"
             class="w-full py-2.5 dark:hover:bg-white"
         />
     </form>
 
     <p class="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-        Remembered it?
+        {{ __('auth.forgot.remembered') }}
         <a href="{{ route('login') }}" class="font-medium text-zinc-900 dark:text-zinc-100 hover:underline underline-offset-4 transition-colors">
-            Back to log in
+            {{ __('auth.forgot.back') }}
         </a>
     </p>
 </x-layouts.auth>

@@ -1,7 +1,9 @@
 import './bootstrap';
 import { initTheme } from './theme';
+import { initLocale } from './locale';
 
 initTheme();
+initLocale();
 
 document.querySelectorAll('.site-logo-a').forEach((siteNavBrand) => {
     const siteNavLogoPath = siteNavBrand.querySelector('.site-logo-path');

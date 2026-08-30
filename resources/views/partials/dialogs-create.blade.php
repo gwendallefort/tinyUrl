@@ -3,7 +3,7 @@
     class="m-auto w-full max-w-lg rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-xl p-6 backdrop:bg-black/50 open:flex open:flex-col"
 >
     <div class="flex items-center justify-between mb-5">
-        <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">New short URL</h3>
+        <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{{ __('dashboard.create.title') }}</h3>
         <button
             type="button"
             onclick="document.getElementById('create-modal').close()"
@@ -27,14 +27,14 @@
         {{-- Title --}}
         <div>
             <label for="create-title" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Title <span class="text-zinc-400 dark:text-zinc-500 font-normal">(optional)</span>
+                {{ __('dashboard.fields.title') }} <span class="text-zinc-400 dark:text-zinc-500 font-normal">{{ __('dashboard.fields.optional') }}</span>
             </label>
             <input
                 id="create-title"
                 name="title"
                 type="text"
                 value="{{ old('title') }}"
-                placeholder="My awesome link"
+                placeholder="{{ __('dashboard.fields.title_placeholder') }}"
                 autocomplete="off"
                 class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition"
             >
@@ -43,14 +43,14 @@
         {{-- Original URL --}}
         <div>
             <label for="create-original-url" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Destination URL <span class="text-red-500">*</span>
+                {{ __('dashboard.fields.destination') }} <span class="text-red-500">*</span>
             </label>
             <input
                 id="create-original-url"
                 name="original_url"
                 type="text"
                 value="{{ old('original_url') }}"
-                placeholder="example.com/very-long-url"
+                placeholder="{{ __('dashboard.fields.destination_placeholder') }}"
                 required
                 autocomplete="off"
                 class="w-full rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-transparent transition @error('original_url', 'createUrl') border-red-400 dark:border-red-500 @enderror"
@@ -61,7 +61,7 @@
         <div>
             <div class="flex items-center justify-between gap-3 mb-1.5">
                 <label for="create-short-code" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                    Custom alias <span class="text-zinc-400 dark:text-zinc-500 font-normal">(optional - auto-generated if empty)</span>
+                    {{ __('dashboard.fields.custom_alias') }} <span class="text-zinc-400 dark:text-zinc-500 font-normal">{{ __('dashboard.fields.alias_optional_hint') }}</span>
                 </label>
                 <button
                     type="button"
@@ -84,7 +84,7 @@
                             stroke-width="3"
                         />
                     </svg>
-                    <span id="suggest-short-code-label">Suggest</span>
+                    <span id="suggest-short-code-label">{{ __('dashboard.suggest.label') }}</span>
                 </button>
             </div>
             <div class="flex rounded-lg border border-zinc-300 dark:border-zinc-600 overflow-hidden focus-within:ring-2 focus-within:ring-zinc-900 dark:focus-within:ring-zinc-100 focus-within:border-transparent transition @error('short_code', 'createUrl') border-red-400 dark:border-red-500 @enderror">
@@ -96,7 +96,7 @@
                     name="short_code"
                     type="text"
                     value="{{ old('short_code') }}"
-                    placeholder="my-alias"
+                    placeholder="{{ __('dashboard.fields.alias_placeholder') }}"
                     autocomplete="off"
                     class="flex-1 bg-white dark:bg-zinc-900 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none"
                 >
@@ -107,7 +107,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                 </svg>
-                Aliases are case-sensitive - ABC and abc are different links.
+                {{ __('dashboard.fields.alias_case_hint') }}
             </p>
         </div>
 
@@ -116,14 +116,14 @@
                 type="submit"
                 class="inline-flex items-center rounded-lg bg-zinc-900 dark:bg-zinc-100 px-4 py-2 text-sm font-medium text-white dark:text-zinc-900 hover:bg-zinc-700 dark:hover:bg-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:ring-offset-2 transition-colors cursor-pointer"
             >
-                Create short URL
+                {{ __('dashboard.create.submit') }}
             </button>
             <button
                 type="button"
                 onclick="document.getElementById('create-modal').close()"
                 class="inline-flex items-center rounded-lg border border-zinc-300 dark:border-zinc-600 px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
             >
-                Cancel
+                {{ __('ui.actions.cancel') }}
             </button>
         </div>
     </form>

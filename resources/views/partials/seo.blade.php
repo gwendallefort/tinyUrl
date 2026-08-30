@@ -1,6 +1,6 @@
 @php
     $seoTitle = $title;
-    $seoDescription = $description ?? config('seo.default_description');
+    $seoDescription = $description ?? __('seo.default_description');
     $seoCanonical = $canonical ?? url()->current();
     $seoNoindex = $noindex ?? false;
     $seoOgType = $ogType ?? 'website';

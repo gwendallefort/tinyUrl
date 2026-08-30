@@ -7,8 +7,8 @@
     @include('partials.theme-init')
 
     @include('partials.seo', [
-        'title' => $title ?? config('app.name') . ' - Authentication',
-        'description' => $description ?? config('seo.auth_description'),
+        'title' => $title ?? __('seo.titles.auth', ['app' => config('app.name')]),
+        'description' => $description ?? __('seo.auth_description'),
         'noindex' => true,
     ])
 
@@ -22,8 +22,9 @@
 </head>
 <body class="relative bg-gray-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen flex flex-col antialiased" style="font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;">
 
-    <div class="absolute top-4 right-4 z-10">
+    <div class="absolute top-4 right-4 z-10 flex items-center gap-2">
         @include('partials.theme-toggle')
+        @include('partials.locale-toggle')
     </div>
 
     <div class="flex-1 w-full flex items-center justify-center p-4">
