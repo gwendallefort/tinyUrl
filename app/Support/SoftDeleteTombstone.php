@@ -9,8 +9,14 @@ class SoftDeleteTombstone
         return strtolower(base_convert((string) $id, 10, 36));
     }
 
-    public static function value(int $id, string $original): string
+    public static function value(int $id, ?string $original = null): string
     {
-        return self::encodeId($id).'|deleted|'.$original;
+        $tombstone = self::encodeId($id).'|deleted';
+
+        if (!empty($original)) {
+            $tombstone .= '|'.$original;
+        }
+
+        return $tombstone;
     }
 }

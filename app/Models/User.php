@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 #[Fillable(['name', 'email', 'pending_email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -30,11 +32,24 @@ class User extends Authenticatable implements MustVerifyEmail
                 return;
             }
 
+            // clear user data
+            $emails = array_values(array_filter([$user->email, $user->pending_email]));
+            if ($emails !== []) {
+                DB::table(config('auth.passwords.users.table'))
+                    ->whereIn('email', $emails)
+                    ->delete();
+            }
+
             $user->forceFill([
-                'email' => SoftDeleteTombstone::value($user->id, $user->email),
+                'name' => null,
+                'email' => SoftDeleteTombstone::value($user->id),
                 'pending_email' => null,
+                'email_verified_at' => null,
+                'password' => Str::random(64),
+                'remember_token' => null,
             ])->saveQuietly();
 
+            // delete the associated short shortUrls
             $user->shortUrls()->each(fn (ShortUrl $shortUrl) => $shortUrl->delete());
         });
     }
